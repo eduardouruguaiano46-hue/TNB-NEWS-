@@ -1,0 +1,6 @@
+{
+  "name": "TNB News",
+  "description": "O portal de notícias oficial da comunidade Tarot no Bolso - Notícias, Opiniões, Humor, Eventos e Bastidores.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
