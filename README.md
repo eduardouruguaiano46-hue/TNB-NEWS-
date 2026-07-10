@@ -1,4 +1,4 @@
-# TNB News 📰 - Portal Oficial da Comunidade Tarot no Bolso (v26.20)
+# TNB News 📰 - Portal Oficial da Comunidade Tarot no Bolso (v33.33)
 
 Bem-vindo ao repositório do **TNB News**, o portal oficial de notícias, artigos esotéricos, humor e bastidores da vibrante comunidade **Tarot no Bolso (TNB)**. Este projeto foi desenvolvido em **React (Vite) + Tailwind CSS** e está totalmente otimizado para produção.
 
@@ -55,9 +55,10 @@ Seguindo rigorosamente as especificações de dados solicitadas, o portal conta 
 
 Para evitar quaisquer problemas de carregamento de imagens no build de produção (como erros `404 Not Found` no Netlify ou Vercel por conta de caminhos locais relativos), todas as imagens do portal foram totalmente migradas para um CDN de alta performance.
 
-**Resolução Definitiva aplicada (v26.20):**
+**Resolução Definitiva aplicada (v33.33):**
 - Todas as 20 matérias (fatos comunitários e notícias esotéricas) utilizam URLs absolutas hospedadas diretamente em CDN.
 - Isso garante 100% de estabilidade de carregamento em qualquer ambiente de hospedagem estática, sem depender de assets locais no diretório do projeto e proporcionando carregamento ultra-rápido para os usuários do portal.
+- **Aviso de Recesso e Contador Regressivo:** Implementação na página inicial do Comunicado Oficial sobre o Recesso de uma semana da comunidade e do site TNB News, acompanhado de um contador regressivo em tempo real programado para o encerramento em 17 de Julho de 2026 às 00h00.
 
 ---
 

@@ -86,6 +86,40 @@ export default function App() {
   // Version/Changelog Modal
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
 
+  // Countdown Timer to July 17, 2026, 00:00:00 (Fim do Recesso)
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    isCompleted: false
+  });
+
+  useEffect(() => {
+    const targetDate = new Date('2026-07-17T00:00:00');
+    
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = targetDate.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0, isCompleted: true });
+        return;
+      }
+      
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      
+      setCountdown({ days, hours, minutes, seconds, isCompleted: false });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   // User Alert State
   const [alertMessage, setAlertMessage] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
 
@@ -357,7 +391,7 @@ export default function App() {
               <div className="md:border-r border-neutral-200 dark:border-neutral-800 md:px-4 text-center flex flex-col justify-center">
                 <span className="text-[10px] uppercase font-mono tracking-wider text-neutral-500">MUDANÇA DE MAGNITUDE</span>
                 <div className="flex items-center justify-center gap-2 mt-0.5">
-                  <span className="font-serif font-bold text-neutral-900 dark:text-neutral-100">Versão v26.20</span>
+                  <span className="font-serif font-bold text-neutral-900 dark:text-neutral-100">Versão v33.33</span>
                   <button 
                     onClick={() => setIsChangelogOpen(true)}
                     className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-900 dark:bg-red-950 dark:text-red-200 text-[10px] px-2 py-0.5 rounded font-mono font-bold transition-colors"
@@ -472,7 +506,183 @@ export default function App() {
 
         {/* MAIN PORTAL BODY */}
         <main className="max-w-7xl mx-auto px-4 mt-6">
-          
+
+          {/* COMUNICADO OFICIAL DE RECESSO DA COMUNIDADE */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 overflow-hidden rounded-2xl border-2 border-red-500 bg-gradient-to-br from-red-50/90 via-[#fefefe]/95 to-amber-50/90 p-6 shadow-xl dark:from-neutral-900/90 dark:via-neutral-900/95 dark:to-neutral-950/90 dark:border-red-600"
+          >
+            {/* Header / Accent */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-6">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/80 dark:text-red-400">
+                  <AlertCircle className="w-6 h-6 animate-pulse" />
+                </span>
+                <div>
+                  <span className="text-[10px] uppercase font-mono tracking-widest bg-red-600 text-white dark:bg-red-950 dark:text-red-300 px-2 py-0.5 rounded font-bold">
+                    Comunicado Importante
+                  </span>
+                  <h2 className="font-serif text-xl md:text-2xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight mt-0.5">
+                    COMUNICADO OFICIAL: RECESSO GERAL DA COMUNIDADE
+                  </h2>
+                </div>
+              </div>
+              <div className="bg-red-100 dark:bg-red-950/90 border border-red-200 dark:border-red-900 px-4 py-2 rounded-xl flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-red-600 dark:text-red-400" />
+                <span className="font-mono text-xs font-bold text-red-900 dark:text-red-300">
+                  Período: 10 de Julho a 17 de Julho de 2026
+                </span>
+              </div>
+            </div>
+
+            {/* Countdown Timer Section */}
+            <div className="bg-neutral-900 text-white rounded-xl p-5 mb-6 text-center border border-red-600/30">
+              <p className="text-[10px] uppercase tracking-widest font-mono text-red-400 font-bold mb-2">
+                ⏱️ CONTADOR REGRESSIVO — RETORNO DAS ATIVIDADES DA COMUNIDADE
+              </p>
+              {countdown.isCompleted ? (
+                <div className="text-xl font-bold font-mono text-amber-400">
+                  O RECESSO TERMINOU! A COMUNIDADE RETORNOU ÀS ATIVIDADES.
+                </div>
+              ) : (
+                <div className="grid grid-cols-4 gap-2 max-w-md mx-auto">
+                  <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-2.5">
+                    <span className="block text-2xl md:text-3xl font-black text-red-500 font-mono">
+                      {String(countdown.days).padStart(2, '0')}
+                    </span>
+                    <span className="text-[9px] uppercase font-mono text-neutral-400">Dias</span>
+                  </div>
+                  <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-2.5">
+                    <span className="block text-2xl md:text-3xl font-black text-red-500 font-mono">
+                      {String(countdown.hours).padStart(2, '0')}
+                    </span>
+                    <span className="text-[9px] uppercase font-mono text-neutral-400">Horas</span>
+                  </div>
+                  <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-2.5">
+                    <span className="block text-2xl md:text-3xl font-black text-red-500 font-mono">
+                      {String(countdown.minutes).padStart(2, '0')}
+                    </span>
+                    <span className="text-[9px] uppercase font-mono text-neutral-400">Minutos</span>
+                  </div>
+                  <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-2.5">
+                    <span className="block text-2xl md:text-3xl font-black text-red-500 font-mono">
+                      {String(countdown.seconds).padStart(2, '0')}
+                    </span>
+                    <span className="text-[9px] uppercase font-mono text-neutral-400">Segundos</span>
+                  </div>
+                </div>
+              )}
+              <p className="text-[10px] font-mono text-neutral-400 mt-2.5">
+                Data prevista para encerramento: <strong>17 de Julho às 00h00</strong>. Havendo alterações, publicaremos novo aviso oficial.
+              </p>
+            </div>
+
+            {/* Structured Content Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-sans text-xs md:text-sm text-neutral-700 dark:text-neutral-300">
+              {/* Left Side */}
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-serif font-black text-sm text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5 uppercase border-b border-neutral-200 dark:border-neutral-800 pb-1 mb-2">
+                    <span className="text-red-500">📌</span> Situação Geral
+                  </h3>
+                  <p className="leading-relaxed">
+                    Nos últimos dias, a comunidade enfrentou uma série de conflitos, cobranças intensas e situações delicadas que exigiram muito da administração. Mesmo diante das dificuldades, as administradoras estiveram presentes, tentando manter o espaço organizado, seguro e acolhedor para todos.
+                  </p>
+                  <p className="leading-relaxed mt-2 font-semibold text-red-600 dark:text-red-400">
+                    No entanto, chegamos a um ponto de esgotamento.
+                  </p>
+                  <p className="leading-relaxed mt-1">
+                    Cuidar de uma comunidade grande demanda tempo, energia emocional e dedicação constantes. As administradoras também são pessoas que precisam descansar para não adoecerem sob a pressão.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-serif font-black text-sm text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5 uppercase border-b border-neutral-200 dark:border-neutral-800 pb-1 mb-2">
+                    <span className="text-red-500">🕊️</span> Recesso da Comunidade
+                  </h3>
+                  <p className="leading-relaxed font-semibold">
+                    A comunidade ficará fechada por 1 (uma) semana (de 10/07 a 17/07).
+                  </p>
+                  <ul className="list-disc pl-4 mt-2.5 space-y-1 leading-relaxed">
+                    <li><strong>Motivo:</strong> recesso necessário para que as administradoras possam respirar, recuperar as energias e reorganizar as demandas internas.</li>
+                    <li><strong>Objetivo:</strong> retornar com mais equilíbrio, força e presença para continuar cuidando deste espaço.</li>
+                  </ul>
+                  <p className="leading-relaxed mt-2.5 italic bg-neutral-100 dark:bg-neutral-800 p-2.5 rounded border-l-2 border-red-500 text-neutral-600 dark:text-neutral-400">
+                    "Importante: essa pausa não é um abandono da comunidade, mas sim um cuidado necessário para que possamos voltar mais fortes."
+                  </p>
+                </div>
+              </div>
+
+              {/* Right Side */}
+              <div className="space-y-4">
+                <div>
+                  <h3 className="font-serif font-black text-sm text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5 uppercase border-b border-neutral-200 dark:border-neutral-800 pb-1 mb-2">
+                    <span className="text-red-500">💬</span> Chat Diário
+                  </h3>
+                  <p className="leading-relaxed">
+                    Durante o recesso, todos os dias a administração publicará uma mensagem para que vocês possam usar como chat e conversar entre si.
+                  </p>
+                  <div className="mt-2.5 bg-amber-50 dark:bg-amber-950/40 p-3 rounded-lg border border-amber-200 dark:border-amber-900 leading-relaxed text-amber-900 dark:text-amber-200">
+                    <strong className="block mb-1">📢 Pedido da administração:</strong>
+                    <ul className="list-disc pl-4 space-y-1">
+                      <li>Não criem comunidades ou grupos paralelos durante esse período.</li>
+                      <li>Caso isso aconteça, a comunidade será apagada definitivamente.</li>
+                      <li>Apenas 1 semana — vocês sobrevivem 😉</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-serif font-black text-sm text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5 uppercase border-b border-neutral-200 dark:border-neutral-800 pb-1 mb-2">
+                    <span className="text-red-500">🌐</span> Situação do Site TNB News
+                  </h3>
+                  <p className="leading-relaxed">
+                    Seguindo a mesma decisão da administração, o site TNB News também entrará em modo de recesso. Durante esses 7 (sete) dias:
+                  </p>
+                  <ul className="mt-2.5 space-y-1.5 font-mono text-xs">
+                    <li className="flex items-center gap-1.5 text-red-600 dark:text-red-400">❌ Não serão publicadas novas reportagens;</li>
+                    <li className="flex items-center gap-1.5 text-red-600 dark:text-red-400">❌ Não haverá atualizações de conteúdo;</li>
+                    <li className="flex items-center gap-1.5 text-red-600 dark:text-red-400">❌ Recursos em desenvolvimento continuarão indisponíveis;</li>
+                    <li className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">✅ O site permanecerá online apenas para consulta das matérias já publicadas.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Section: Sobre as Críticas e Cobranças */}
+            <div className="mt-6 pt-5 border-t border-neutral-200 dark:border-neutral-800">
+              <h3 className="font-serif font-black text-sm text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5 uppercase pb-1 mb-3">
+                <span className="text-red-500">📢</span> Sobre as Críticas e Cobranças
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 font-sans text-xs text-neutral-700 dark:text-neutral-300">
+                <div className="bg-neutral-50 dark:bg-neutral-950 p-3.5 rounded-lg border border-neutral-200 dark:border-neutral-850">
+                  <strong className="block text-red-700 dark:text-red-400 mb-1.5 uppercase tracking-wide font-mono text-[10px]">🏆 Sobre os Prêmios:</strong>
+                  <ul className="list-disc pl-4 space-y-1 leading-relaxed">
+                    <li>Foi avisado desde o início: "pode conter" — isso significa possibilidade, não obrigação.</li>
+                    <li>Com um orçamento de R$70, não é possível comprar "mundos e fundos".</li>
+                    <li>O que foi enviado foi feito com amor, carinho e dedicação dentro do valor disponível.</li>
+                    <li>A administração não vai tirar dinheiro do próprio bolso.</li>
+                    <li>Quem ganhou não reclamou — sejam mais gratos!</li>
+                  </ul>
+                </div>
+                <div className="bg-neutral-50 dark:bg-neutral-950 p-3.5 rounded-lg border border-neutral-200 dark:border-neutral-850">
+                  <strong className="block text-red-700 dark:text-red-400 mb-1.5 uppercase tracking-wide font-mono text-[10px]">🕊️ Sobre Intolerância:</strong>
+                  <ul className="list-disc pl-4 space-y-1 leading-relaxed">
+                    <li>Respeito gera respeito.</li>
+                    <li>Se você luta pelo respeito às suas práticas, o mínimo é respeitar as dos outros.</li>
+                    <li>A comunidade tem dado muitos problemas ultimamente, e isso tem deixado todos transtornados.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Agradecimentos Footer */}
+            <div className="mt-5 text-center text-xs font-mono bg-neutral-100 dark:bg-neutral-900/60 p-2.5 rounded-lg text-neutral-600 dark:text-neutral-400">
+              🙏 Agradecemos a compreensão, o respeito e o apoio de todos durante esse período. Esperamos retornar em breve com novas reportagens, melhorias no aplicativo e novidades para a comunidade. — <strong>Administração TNB News</strong>
+            </div>
+          </motion.div>
+
           {/* Search Indicator */}
           {searchQuery && (
             <div className="bg-red-50 border border-red-200 text-red-900 px-4 py-3 rounded-lg mb-6 flex items-center justify-between text-sm dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-100">
@@ -1305,7 +1515,7 @@ export default function App() {
                   {/* Magnitude Stats */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center font-mono">
                     <div className="p-3 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-850 rounded-xl">
-                      <span className="block text-xl font-black text-red-600 dark:text-red-400">v26.20</span>
+                      <span className="block text-xl font-black text-red-600 dark:text-red-400">v33.33</span>
                       <span className="text-[10px] text-neutral-500 uppercase font-bold">Versão Atual</span>
                     </div>
                     <div className="p-3 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-850 rounded-xl">
@@ -1323,7 +1533,11 @@ export default function App() {
                     <h4 className="font-serif font-black text-neutral-900 dark:text-white border-b border-neutral-200 dark:border-neutral-800 pb-1">Log de Evolução Editorial</h4>
                     <ul className="space-y-3 font-mono text-xs text-neutral-600 dark:text-neutral-400">
                       <li className="flex justify-between items-start gap-4">
-                        <span className="font-bold text-red-700 dark:text-red-400 shrink-0">v26.20 (Entrega Atual)</span>
+                        <span className="font-bold text-red-700 dark:text-red-400 shrink-0">v33.33 (Entrega Atual)</span>
+                        <span className="text-right">Publicação do Comunicado Oficial sobre o Recesso da Comunidade e do Portal TNB News. Integração de um contador regressivo dinâmico em tempo real voltado ao dia 17 de Julho de 2026 às 00h00. Atualização completa das descrições do repositório no Github para automação integrada de produção via Netlify.</span>
+                      </li>
+                      <li className="flex justify-between items-start gap-4 text-neutral-400">
+                        <span className="font-bold shrink-0">v26.20 (Sincronização CDN)</span>
                         <span className="text-right">Grande atualização e sincronização do portal com o repositório do Github. Consolidação completa de todas as 20 matérias (fatos comunitários e giro esotérico) seguindo rigorosamente as especificações do TXT. Reorganização total de recursos e correção definitiva do carregamento de imagens no build de produção (/images/ no diretório público).</span>
                       </li>
                       <li className="flex justify-between items-start gap-4 text-neutral-400">
