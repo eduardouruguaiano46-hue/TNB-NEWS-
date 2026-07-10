@@ -4,13 +4,13 @@ export const INITIAL_ARTICLES: Article[] = [
   {
     id: 'art-1',
     title: 'Clara recebe críticas após participar de bolão interno da comunidade',
-    subtitle: 'Uma escolha polêmica no bolão da partida Brasil x Noruega movimenta as redes do grupo Tarot no Bolso.',
-    summary: 'Uma brincadeira promovida entre integrantes da comunidade Tarot no Bolso acabou gerando discussões nas redes do grupo. O bolão, realizado antes da partida entre Brasil e Noruega, convidava os participantes a escolherem um placar para concorrer a um kit esotérico. Entre os palpites enviados, Clara escolheu uma vitória da Noruega por 2 a 1.',
-    category: 'ultima-hora',
+    subtitle: 'Membros questionam postura de moderadora em dinâmica de apostas na Noruega.',
+    summary: 'A participação de Clara em um bolão interno gerou debates acalorados no grupo TNB, onde membros levantaram questionamentos sobre a conduta de uma das moderadoras em palpites esportivos.',
+    category: 'comunidade',
     type: 'factual',
     author: 'Redação TNB News',
     date: '10 de Julho de 2026',
-    imageUrl: '/src/assets/images/bolao_clara_noruega_1783708704008.jpg',
+    imageUrl: 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663826546061/ugVlQZzExZQzexNY.jpg',
     content: [
       'Uma brincadeira promovida entre integrantes da comunidade Tarot no Bolso acabou gerando discussões acaloradas nas redes sociais do grupo. O bolão, realizado pouco antes da aguardada partida de futebol feminino entre Brasil e Noruega, convidava todos os participantes a escolherem um placar exato para concorrer a um prestigiado kit esotérico composto por baralhos, incensos e cristais raros.',
       'A polêmica se instalou quando os palpites de todos os membros foram abertos ao público. Entre as apostas de vitória brasileira e palpites de empates cautelosos, o palpite de Clara se destacou de forma controversa: ela cravou uma vitória da Noruega por 2 a 1 contra a Seleção Brasileira.',
@@ -23,13 +23,13 @@ export const INITIAL_ARTICLES: Article[] = [
   {
     id: 'art-2',
     title: 'Repercussão do Bolão - Mensagens bem-humoradas movimentam a comunidade',
-    subtitle: 'Bastidores descontraídos mostram previsões inusitadas, sonhos bizarros com Haaland e empenho de vendas.',
-    summary: 'Na véspera da partida entre Brasil e Noruega, integrantes da comunidade Tarot no Bolso trocaram diversas mensagens em tom descontraído sobre o confronto.',
+    subtitle: 'Memes com Haaland e piadas sobre a sorte de Clara divertem membros.',
+    summary: 'Apesar das críticas, o humor prevaleceu com montagens criativas envolvendo o craque norueguês e diálogos cômicos sobre as previsões do bolão.',
     category: 'comunidade',
     type: 'humor',
     author: 'Editoria de Humor',
-    date: '09 de Julho de 2026',
-    imageUrl: '/src/assets/images/humor_bolao_haaland_1783708715352.jpg',
+    date: '10 de Julho de 2026',
+    imageUrl: 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663826546061/HJtaKeQGjXyvlmBI.jpg',
     content: [
       'Na véspera da histórica partida entre Brasil e Noruega, a comunidade Tarot no Bolso provou que, além de entender das ciências ocultas, também domina a arte da comédia. Diversos integrantes trocaram mensagens em um tom extremamente bem-humorado, que acabaram vazando e virando entretenimento puro para todos os membros.',
       'A taróloga Lucy W. Tarot roubou a cena ao comentar, de forma visivelmente descontraída, que seus rituais estavam todos direcionados e que ela estava "torcendo fortemente para que o atacante Erling Haaland tivesse uma caganeira" antes de entrar em campo, demonstrando que vale tudo na rivalidade esportiva.',
@@ -41,14 +41,14 @@ export const INITIAL_ARTICLES: Article[] = [
   },
   {
     id: 'art-3',
-    title: 'Autismo e Mistério: A história de Eduardo, o homem que se comunica por áudios da internet no grupo TNB',
-    subtitle: 'Diagnosticado com autismo nível 1, jovem encontrou na linguagem digital uma forma única de se expressar.',
-    summary: 'Diagnosticado com autismo nível 1, jovem encontrou na linguagem digital uma forma única de se expressar — e virou figura enigmática entre os amigos.',
+    title: 'Autismo e Mistério: A história de Eduardo',
+    subtitle: 'Relato emocionante sobre superação e os desafios da comunicação no espectro.',
+    summary: 'Eduardo compartilha sua jornada de vida, destacando como o apoio da comunidade foi vital para desvendar as formas atípicas e enigmáticas de se fazer compreender.',
     category: 'comunidade',
     type: 'factual',
     author: 'Repórter Especial',
-    date: '08 de Julho de 2026',
-    imageUrl: '/src/assets/images/eduardo_audio_autismo_1783708725187.jpg',
+    date: '09 de Julho de 2026',
+    imageUrl: 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663826546061/OgrsinFCvDXdFuxa.jpg',
     content: [
       'No dinâmico universo do grupo de bate-papo Tarot no Bolso (TNB), uma figura se destaca de forma enigmática. Eduardo não realiza leituras de tarô, não joga cartas, mas encontrou ali um porto seguro para sua forte ligação com a espiritualidade. No entanto, o que intrigava a todos no início era sua forma peculiar de interagir: ele raramente enviava mensagens de texto e nunca gravava a própria voz.',
       'Em vez disso, a comunicação de Eduardo era feita exclusivamente pelo envio de áudios prontos extraídos da internet — pequenos trechos de filmes clássicos, memes famosos do TikTok, falas de anime ou músicas marcantes. Para cada emoção ou resposta, ele tinha um áudio específico guardado em seu repositório pessoal.',
@@ -60,20 +60,20 @@ export const INITIAL_ARTICLES: Article[] = [
       { label: 'Diagnóstico', value: 'Autismo nível 1 de suporte' },
       { label: 'Forma de comunicação', value: 'Áudios prontos da internet (memes, filmes, músicas)' },
       { label: 'Crença espiritual', value: 'Acredita em forças maiores, mas não pratica tarot' },
-      { label: 'Reação do grupo', value: 'Inicialmente estranhamento, hoje acolhimento total e aprendizado mútuo' }
+      { label: 'Reação do grupo', value: 'Acolhimento total e aprendizado mútuo' }
     ],
     comments: []
   },
   {
     id: 'art-4',
-    title: 'O Caso Ioiô da Viih: Jejum, oração e baralho revelam "efeito amoroso" no Tarot no Bolso',
-    subtitle: 'Jovem relata descoberta inusitada após ex-namorado iniciar ritual espiritual para reatar relacionamento.',
-    summary: 'Jovem relata descoberta inusitada após ex-namorado iniciar ritual espiritual para reatar relacionamento — e cartas confirmam influência direta.',
-    category: 'opiniao',
+    title: 'O Caso Ioiô da Viih: Jejum, oração e baralho revelam "efeito amoroso"',
+    subtitle: 'Misticismo e espiritualidade se misturam em caso que intriga o grupo.',
+    summary: 'Viih relata experiências espirituais intensas que transformaram sua visão sobre relacionamentos amorosos e o impacto energético das preces de terceiros.',
+    category: 'comunidade',
     type: 'opiniao',
     author: 'Coluna de Espiritualidade',
-    date: '07 de Julho de 2026',
-    imageUrl: '/src/assets/images/caso_ioio_viih_1783708734188.jpg',
+    date: '08 de Julho de 2026',
+    imageUrl: 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663826546061/IaXeMKYqkOHwNcTW.jpg',
     content: [
       'O amor e a espiritualidade andam de mãos dadas, mas às vezes de uma forma bastante peculiar. A integrante Viih trouxe à tona um relato que acendeu debates filosóficos profundos sobre livre-arbítrio e influências ocultas nas relações afetivas dentro da comunidade Tarot no Bolso.',
       'Tudo começou quando Viih descobriu que seu ex-namorado, inconformado com o término recente, havia iniciado uma jornada espiritual intensa, envolvendo jejum rigoroso e correntes diárias de oração com o único objetivo de fazê-la reatar o relacionamento amoroso.',
@@ -82,34 +82,33 @@ export const INITIAL_ARTICLES: Article[] = [
       'Viih batizou o fenômeno de "Caso Ioiô" ("ele puxa lá no jejum, eu vou emocionalmente; ele solta, eu volto ao normal"). Embora admita sentir os efeitos energéticos das preces do ex-parceiro, Viih faz questão de frisar a soberania do seu livre-arbítrio: "Eu reconheço a força energética do que ele está fazendo, mas não sou obrigada a voltar para quem eu não quero só porque ele está jejuando!".'
     ],
     technicalSpecs: [
-      { label: 'Fenômeno', value: 'Efeito de jejum e oração do ex-namorado sobre sentimentos' },
+      { label: 'Fenômeno', value: 'Efeito de jejum e oração' },
       { label: 'Ferramenta de confirmação', value: 'Baralho cigano' },
-      { label: 'Posição de Viih', value: 'Reconhece o impacto energético, mas mantém e defende seu livre-arbítrio' }
+      { label: 'Posição de Viih', value: 'Defesa absoluta do livre-arbítrio' }
     ],
     comments: []
   },
   {
     id: 'art-5',
-    title: 'O curioso caso de Moisés: Sumiço misterioso no grupo TNB gera teorias, mitos e especulações',
-    subtitle: 'Um dos membros mais antigos desaparece sem deixar rastros, abrindo margem para hipóteses surreais.',
-    summary: 'Integrante desapareceu sem dar explicações; versões vão desde agressão por tiragem errada até alusão bíblica envolvendo "mar vermelho".',
-    category: 'eventos',
+    title: 'O curioso caso de Moisés: Sumiço misterioso no grupo TNB',
+    subtitle: 'Onde está Moisés? Membros criam teorias sobre o desaparecimento repentino.',
+    summary: 'O sumiço de Moisés das discussões diárias gerou uma onda de buscas e teorias curiosas, variando desde agressões por revelações de cartas até rituais de reclusão mística.',
+    category: 'comunidade',
     type: 'misterio',
     author: 'Investigação Especial',
-    date: '06 de Julho de 2026',
-    imageUrl: '/src/assets/images/misterio_moises_1783708745879.jpg',
+    date: '07 de Julho de 2026',
+    imageUrl: 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663826546061/pcfxInFYJbZmkXmE.jpg',
     content: [
-      'O desaparecimento digital de Moisés, um dos membros fundadores e mais ativos da comunidade Tarot no Bolso (TNB), tornou-se o maior enigma do grupo nos últimos tempos. Sem enviar uma única mensagem de despedida, aviso ou justificativa, o tarólogo simplesmente sumiu das discussões diárias.',
+      'O desaparecimento digital de Moisés, um dos membros fundadores e mais activos da comunidade Tarot no Bolso (TNB), tornou-se o maior enigma do grupo nos últimos tempos. Sem enviar uma única mensagem de despedida, aviso ou justificativa, o tarólogo simplesmente sumiu das discussões diárias.',
       'A falta de informações concretas abriu as portas da imaginação fértil dos membros da comunidade, que começaram a formular teorias das mais lógicas às mais bizarras para tentar decifrar o mistério.',
       'A primeira grande hipótese, apelidada de "A tiragem que deu errado", especula que Moisés realizou uma leitura de cartas presencial para uma cliente desconhecida. No entanto, por sua precisão cirúrgica, ele teria "visto demais" — revelando segredos comprometedores ou prevendo uma tragédia que a cliente não queria aceitar. A hipótese sugere que a cliente, furiosa, teria partido para a agressão física contra o tarólogo, que estaria agora se recuperando e afastado dos aparelhos.',
       'A segunda hipótese, repleta de misticismo e trocadilhos bíblicos com seu nome, é a "Teoria do Mar Vermelho". Amigos sugerem que a namorada de Moisés entrou em seu período menstrual — descrito de forma figurada como um momento de "sangramento espiritual" ou "energia densa" — e que Moisés, honrando seu nome bíblico, precisou se ausentar temporariamente de todas as suas atividades digitais para prestar suporte e cuidar integralmente de sua companheira.',
       'A realidade é que Moisés continua visualizando as mensagens de preocupação dos amigos sem responder a nenhuma delas, e recusa chamadas de voz. Enquanto o mistério persiste, o grupo lida com a curiosidade e o vazio deixado por sua ausência enigmática.'
     ],
     technicalSpecs: [
-      { label: 'Status atual', value: 'Desaparecido digitalmente / Silêncio absoluto' },
-      { label: 'Teoria 1 (Tiragem)', value: 'Agressão física sofrida após revelar segredo em leitura presencial' },
-      { label: 'Teoria 2 (Mar Vermelho)', value: 'Cuidados intensivos com a companheira no ciclo menstrual' },
-      { label: 'Contato', value: 'Ignora mensagens visualizadas e não atende telefonemas' }
+      { label: 'Status atual', value: 'Desaparecido digitalmente' },
+      { label: 'Teorias', value: 'Tiragem perigosa / Reclusão mística de cuidado' },
+      { label: 'Interação', value: 'Visualiza e ignora mensagens de preocupação' }
     ],
     comments: []
   }

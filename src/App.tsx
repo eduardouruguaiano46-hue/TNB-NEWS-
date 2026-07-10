@@ -357,7 +357,7 @@ export default function App() {
               <div className="md:border-r border-neutral-200 dark:border-neutral-800 md:px-4 text-center flex flex-col justify-center">
                 <span className="text-[10px] uppercase font-mono tracking-wider text-neutral-500">MUDANÇA DE MAGNITUDE</span>
                 <div className="flex items-center justify-center gap-2 mt-0.5">
-                  <span className="font-serif font-bold text-neutral-900 dark:text-neutral-100">Versão v20.00</span>
+                  <span className="font-serif font-bold text-neutral-900 dark:text-neutral-100">Versão v26.20</span>
                   <button 
                     onClick={() => setIsChangelogOpen(true)}
                     className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-900 dark:bg-red-950 dark:text-red-200 text-[10px] px-2 py-0.5 rounded font-mono font-bold transition-colors"
@@ -723,7 +723,7 @@ export default function App() {
                   
                   {/* Category filters inside section */}
                   <div className="md:col-span-8 flex flex-wrap items-center gap-1.5">
-                    {['todos', 'Astrologia', 'Tarot', 'Espiritualidade', 'Cristais', 'Mediunidade'].map((cat) => (
+                    {['todos', 'Astrologia', 'Tarot', 'Espiritualidade', 'Cristais', 'Mediunidade', 'Sonhos', 'Umbanda'].map((cat) => (
                       <button
                         key={cat}
                         onClick={() => setEsotericFilter(cat)}
@@ -1305,7 +1305,7 @@ export default function App() {
                   {/* Magnitude Stats */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center font-mono">
                     <div className="p-3 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-850 rounded-xl">
-                      <span className="block text-xl font-black text-red-600 dark:text-red-400">v20.00</span>
+                      <span className="block text-xl font-black text-red-600 dark:text-red-400">v26.20</span>
                       <span className="text-[10px] text-neutral-500 uppercase font-bold">Versão Atual</span>
                     </div>
                     <div className="p-3 bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-850 rounded-xl">
@@ -1323,7 +1323,11 @@ export default function App() {
                     <h4 className="font-serif font-black text-neutral-900 dark:text-white border-b border-neutral-200 dark:border-neutral-800 pb-1">Log de Evolução Editorial</h4>
                     <ul className="space-y-3 font-mono text-xs text-neutral-600 dark:text-neutral-400">
                       <li className="flex justify-between items-start gap-4">
-                        <span className="font-bold text-red-700 dark:text-red-400 shrink-0">v20.00 (Entrega Atual)</span>
+                        <span className="font-bold text-red-700 dark:text-red-400 shrink-0">v26.20 (Entrega Atual)</span>
+                        <span className="text-right">Grande atualização e sincronização do portal com o repositório do Github. Consolidação completa de todas as 20 matérias (fatos comunitários e giro esotérico) seguindo rigorosamente as especificações do TXT. Reorganização total de recursos e correção definitiva do carregamento de imagens no build de produção (/images/ no diretório público).</span>
+                      </li>
+                      <li className="flex justify-between items-start gap-4 text-neutral-400">
+                        <span className="font-bold shrink-0">v20.00 (Reorganização)</span>
                         <span className="text-right">Reorganização das funções do app: desativação temporária do Painel de Discussão Comunitária para simplificação estrutural; remoção da seção interativa "Fale com a Redação" e centralização exclusiva de pautas, denúncias de rituais inadequados e relatos via WhatsApp no canal oficial (96) 99182-1516.</span>
                       </li>
                       <li className="flex justify-between items-start gap-4 text-neutral-400">
