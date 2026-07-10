@@ -92,6 +92,21 @@ Para enviar todos os arquivos prontos e as novas alterações para o seu reposit
 
 ---
 
+## 🤖 Automação de Deploy Contínuo com GitHub Actions (Netlify)
+
+O repositório já conta com um workflow automatizado em `.github/workflows/deploy.yml` que compila e publica o site automaticamente na Netlify a cada `git push` na branch `main`.
+
+### Como Configurar as Credenciais no seu GitHub:
+
+Para que a automação envie o build correto para o seu site na Netlify, você precisa adicionar dois **Secrets** no seu repositório do GitHub em `Settings` > `Secrets and variables` > `Actions` > `New repository secret`:
+
+1.  **`NETLIFY_AUTH_TOKEN`**: Seu token pessoal de acesso Netlify. Obtenha em *User settings > Applications > Personal access tokens* no painel da Netlify.
+2.  **`NETLIFY_SITE_ID`**: O ID exclusivo do seu site na Netlify. Encontre nas *Site settings > General > Site information* na Netlify.
+
+Com esses dois Secrets salvos, qualquer nova atualização exportada pelo AI Studio para o seu GitHub disparará automaticamente o processo de build (`npm run build`) e atualizará o site em produção no Netlify sem que você precise fazer nada de forma manual!
+
+---
+
 ## 📜 Licença
 
 Este portal é um projeto exclusivo e proprietário da comunidade **Tarot no Bolso (TNB)**. Todos os direitos reservados.
