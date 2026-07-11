@@ -361,6 +361,7 @@ export default function ComunicadoTab({
                 >
                   <option value="todas">Todas as Campanhas (Global)</option>
                   <option value="alice">Campanha Alice Guedes</option>
+                  <option value="simon">Campanha Simon Cardoso de Oliveira</option>
                   <option value="luma">Campanha Luma Ravaglia</option>
                 </select>
               </div>

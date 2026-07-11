@@ -67,7 +67,7 @@ export default function App() {
 
   // Campaigns State (with dynamic persistence support)
   const [campaigns, setCampaigns] = useState<Campanha[]>(() => {
-    const saved = localStorage.getItem('tnb_campaigns_v5');
+    const saved = localStorage.getItem('tnb_campaigns_v6');
     if (saved) {
       return JSON.parse(saved);
     }
@@ -82,6 +82,17 @@ export default function App() {
         whatsappText: 'Oi Alice! Quero usar seu catálogo e também ajudar seu ratinho.',
         phone: '555399234997',
         formattedPhone: '+55 53 9923-4997'
+      },
+      {
+        id: 'simon',
+        fullName: 'Simon Cardoso de Oliveira',
+        title: 'Campanha Solidária para Quitação de Faturas de Cartão',
+        status_campanha: 'autorizada',
+        meta: 1274.58,
+        arrecadado: 0,
+        whatsappText: 'Oi Simon! Gostaria de ajudar em sua campanha e realizar uma consulta.',
+        phone: '555197087948',
+        formattedPhone: '+55 51 9708-7948'
       },
       {
         id: 'luma',
@@ -99,7 +110,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem('tnb_campaigns_v5', JSON.stringify(campaigns));
+    localStorage.setItem('tnb_campaigns_v6', JSON.stringify(campaigns));
   }, [campaigns]);
 
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);

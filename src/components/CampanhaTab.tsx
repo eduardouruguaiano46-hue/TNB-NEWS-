@@ -64,6 +64,7 @@ export default function CampanhaTab({
                 <span className="inline-block text-[9px] bg-white/10 text-indigo-200 font-mono px-2 py-0.5 rounded mt-1.5 uppercase font-bold tracking-wider">
                   ⚠️ Vinculado a: {
                     synergyCampaign === 'ratinho' || synergyCampaign === 'alice' ? 'Campanha Alice Guedes' : 
+                    synergyCampaign === 'simon' ? 'Campanha Simon Cardoso de Oliveira' :
                     'Campanha Luma Ravaglia'
                   }
                 </span>
@@ -116,22 +117,29 @@ export default function CampanhaTab({
           // Customize colors per campaign
           const isLuma = c.id === 'luma';
           const isAlice = c.id === 'alice';
+          const isSimon = c.id === 'simon';
 
           const cardBorder = isLuma 
             ? 'border-fuchsia-500 dark:border-fuchsia-600' 
-            : 'border-violet-500 dark:border-violet-600';
+            : isSimon
+              ? 'border-red-500 dark:border-red-600'
+              : 'border-violet-500 dark:border-violet-600';
 
           const cardBg = isLuma 
             ? 'from-fuchsia-50/95 via-[#fefefe]/95 to-violet-50/95' 
-            : 'from-violet-50/95 via-[#fefefe]/95 to-pink-50/95';
+            : isSimon
+              ? 'from-red-50/95 via-[#fefefe]/95 to-amber-50/95'
+              : 'from-violet-50/95 via-[#fefefe]/95 to-pink-50/95';
 
           const iconBg = isLuma ? 'bg-fuchsia-100 text-fuchsia-600 dark:bg-fuchsia-950/80 dark:text-fuchsia-400'
+            : isSimon ? 'bg-red-100 text-red-650 dark:bg-red-950/80 dark:text-red-400'
             : 'bg-violet-100 text-violet-600 dark:bg-violet-950/80 dark:text-violet-400';
 
           const categoryBadge = isLuma ? 'bg-fuchsia-600 text-white dark:bg-fuchsia-950'
+            : isSimon ? 'bg-red-600 text-white dark:bg-red-950'
             : 'bg-violet-600 text-white dark:bg-violet-950 dark:text-violet-350';
 
-          const icon = isLuma ? '🎸' : '🐭';
+          const icon = isLuma ? '🎸' : isSimon ? '🔮' : '🐭';
 
           return (
             <motion.div 
@@ -191,6 +199,7 @@ export default function CampanhaTab({
                     <div 
                       className={`h-full rounded-full transition-all duration-500 ${
                         isLuma ? 'bg-gradient-to-r from-fuchsia-500 to-violet-500' :
+                        isSimon ? 'bg-gradient-to-r from-red-500 to-amber-500' :
                         'bg-gradient-to-r from-violet-500 to-pink-500'
                       }`}
                       style={{ width: `${hasMeta ? percent : 0}%` }}
@@ -286,6 +295,43 @@ export default function CampanhaTab({
                           QR Code Alice (Ampliar)
                         </span>
                       </div>
+                    </div>
+                  </>
+                )}
+
+                {isSimon && (
+                  <>
+                    <div className="border-l-4 border-red-500 pl-4 space-y-2">
+                      <p className="font-semibold text-red-950 dark:text-red-150 text-base">
+                        Campanha Solidária de Apoio ao Cartomante Simon Cardoso de Oliveira
+                      </p>
+                      <p className="text-red-800 dark:text-red-300">
+                        O objetivo da campanha é arrecadar <strong>R$ 1.274,58</strong>, valor que corresponde ao total de duas faturas de cartão de crédito atualmente em aberto: uma de R$ 574,58 e outra de R$ 700,00. A arrecadação tem como finalidade quitar integralmente essas dívidas antes que os juros, multas e encargos aumentem ainda mais o valor devido, agravando sua situação financeira.
+                      </p>
+                    </div>
+
+                    <div className="bg-white/80 dark:bg-neutral-900/80 border border-red-250 dark:border-red-950 p-5 rounded-2xl space-y-3 shadow-xs">
+                      <h4 className="font-serif font-black text-xs uppercase text-red-800 dark:text-red-400 flex items-center gap-1.5">
+                        🔮 A Situação e Histórico de Simon:
+                      </h4>
+                      <p className="text-xs leading-relaxed text-red-800 dark:text-red-300">
+                        Segundo Simon, ele trabalha como funcionário terceirizado e recebe uma remuneração inferior ao salário mínimo, o que torna extremamente difícil cobrir todas as despesas mensais. Para complementar sua renda, ele também atua como cartomante, realizando leituras e atendimentos particulares.
+                      </p>
+                      <p className="text-xs leading-relaxed text-red-800 dark:text-red-300">
+                        No entanto, nas últimas semanas houve uma redução significativa na procura pelos seus serviços, fazendo com que sua renda extra diminuísse justamente no momento em que as faturas venceram.
+                      </p>
+                    </div>
+
+                    <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 p-4 rounded-xl text-xs space-y-2">
+                      <p className="font-bold text-red-900 dark:text-red-300">
+                        📋 Finalidade e Transparência dos Recursos:
+                      </p>
+                      <p className="text-red-800 dark:text-red-300">
+                        Mesmo mantendo sua atividade profissional e buscando formas de aumentar a renda, Simon relata que, no momento, não possui recursos suficientes para quitar essas despesas sem comprometer necessidades básicas. Por esse motivo, decidiu recorrer à campanha de arrecadação como uma alternativa para evitar que a dívida continue crescendo devido à cobrança de juros e outros encargos financeiros.
+                      </p>
+                      <p className="text-red-800 dark:text-red-350 font-bold bg-red-100/50 dark:bg-red-900/30 p-2.5 rounded-lg border border-red-200/50">
+                        💳 Quitação de Dívidas Ativas: Todo o valor arrecadado será destinado exclusivamente ao pagamento dessas duas faturas de cartão de crédito. A campanha permanecerá ativa até que a meta de R$ 1.274,58 seja alcançada de forma integral.
+                      </p>
                     </div>
                   </>
                 )}
@@ -437,6 +483,7 @@ export default function CampanhaTab({
                     rel="noreferrer"
                     className={`inline-flex items-center justify-center gap-2 bg-gradient-to-r text-white font-mono text-xs font-bold py-3.5 px-6 rounded-2xl transition-all shadow-md hover:scale-102 uppercase tracking-wider ${
                       isLuma ? 'from-fuchsia-500 to-violet-500 hover:from-fuchsia-600 hover:to-violet-600' :
+                      isSimon ? 'from-red-500 to-amber-500 hover:from-red-600 hover:to-amber-600' :
                       'from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600'
                     }`}
                   >
