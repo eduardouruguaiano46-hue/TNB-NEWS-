@@ -111,6 +111,24 @@ export const INITIAL_ARTICLES: Article[] = [
       { label: 'Interação', value: 'Visualiza e ignora mensagens de preocupação' }
     ],
     comments: []
+  },
+  {
+    id: 'art-6',
+    title: 'Luma Ravaglia e o Renascimento da Oráculo das Ruas',
+    subtitle: 'A emocionante trajetória de superação e sobriedade da taróloga.',
+    summary: 'Uma reportagem especial de fôlego sobre a história de superação de Luma Ravaglia, sua jornada de sobriedade de um ano e meio e sua campanha para assistir ao show do MGK.',
+    category: 'comunidade',
+    type: 'factual',
+    author: 'Editor Especial de Pautas',
+    date: '17 de Julho de 2026',
+    imageUrl: 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663826546061/IaXeMKYqkOHwNcTW.jpg',
+    content: [
+      'No coração da comunidade Tarot no Bolso, a presença de Luma Ravaglia (conhecida como a punkstar do tarot) é sinônimo de resiliência e intensidade. Oraculista e magista dedicada, Luma soma mais de dez anos de dedicação sincera ao estudo das cartas e do ocultismo, auxiliando dezenas de consulentes com suas tiragens perspicazes.',
+      'Sua trajetória recente é marcada por um poderoso processo de reabilitação. Luma relata que está em recuperação da dependência química e afirma estar limpa há cerca de um ano e meio após um período de internação. Conhecer Machine Gun Kelly (MGK) representa para ela a realização de um grande sonho e uma forma de celebrar essa caminhada vitoriosa.',
+      'A história de superação e as músicas do artista servem como fonte diária de motivação para manter sua sobriedade. Por isso, assistir ao show do MGK em São Paulo tornou-se o grande foco de sua campanha solidária ativa. Para arrecadar os R$ 2.500,00 necessários para custear passagem, ingresso e estadia, Luma concedeu 25% de desconto em todas as suas tiragens e serviços mágicos, recebendo o apoio de toda a redação do TNB News.'
+    ],
+    comments: [],
+    data_publicacao_autorizada: '2026-07-17'
   }
 ];
 

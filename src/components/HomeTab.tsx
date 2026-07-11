@@ -236,19 +236,33 @@ export default function HomeTab({
             Fale com a Redação
           </h3>
           <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-            Todas as sugestões de matérias, denúncias, relatos e fofocas esotéricas devem ser enviadas exclusivamente pelo número oficial da nossa equipe.
+            Todas as solicitações de campanhas, sugestões de reportagens, denúncias e relatos devem ser enviadas exclusivamente para o número oficial da nossa redação no WhatsApp.
           </p>
           
-          <div className="bg-red-50/50 dark:bg-red-950/25 p-4 rounded-xl border border-red-200/40 dark:border-red-900/40 space-y-3">
-            <span className="block text-[10px] font-mono text-red-950 dark:text-red-400 uppercase tracking-wider font-bold">Canal Único no WhatsApp:</span>
-            <a 
-              href="https://wa.me/5596991821516?text=Ol%C3%A1%20Edu%2C%20quero%20preencher%20o%20formul%C3%A1rio%2C%20pode%20me%20mandar%3F"
-              target="_blank"
-              rel="noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-mono text-xs font-bold py-3 px-4 rounded-xl transition-all uppercase tracking-wider text-center shadow-sm"
-            >
-              <Phone className="w-4 h-4 fill-white" /> WhatsApp: (96) 99182-1516
-            </a>
+          <div className="bg-red-50/50 dark:bg-red-950/25 p-4 rounded-xl border border-red-200/40 dark:border-red-900/40 space-y-4">
+            <span className="block text-[10px] font-mono text-red-950 dark:text-red-400 uppercase tracking-wider font-bold text-center">
+              Número de Contato Único: +55 96 99182-1516
+            </span>
+            
+            <div className="grid grid-cols-1 gap-2.5">
+              <a 
+                href={`https://wa.me/5596991821516?text=${encodeURIComponent("Oi, sou membro da comunidade Tarot no Bolso e quero publicar minha campanha solidária no portal TNB NEWS.")}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-mono text-[10px] font-black py-3 px-4 rounded-xl transition-all uppercase tracking-wider text-center shadow-xs"
+              >
+                <Phone className="w-4 h-4 fill-white" /> Quero minha campanha
+              </a>
+              
+              <a 
+                href={`https://wa.me/5596991821516?text=${encodeURIComponent("Oi, quero uma reportagem sobre mim no site TNB NEWS.")}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-neutral-100 dark:bg-neutral-850 hover:bg-neutral-200 dark:hover:bg-neutral-800 text-neutral-900 dark:text-neutral-150 border border-neutral-300 dark:border-neutral-700 font-mono text-[10px] font-black py-3 px-4 rounded-xl transition-all uppercase tracking-wider text-center shadow-xs"
+              >
+                <Phone className="w-4 h-4 text-emerald-500" /> Quero uma reportagem
+              </a>
+            </div>
           </div>
 
           <div className="space-y-2.5 pt-2">
@@ -257,13 +271,13 @@ export default function HomeTab({
             </h4>
             <ul className="space-y-2 text-xs font-mono text-neutral-600 dark:text-neutral-350">
               <li className="flex items-center gap-2">
-                <span className="text-red-600 dark:text-red-400">●</span> Sugestões de matérias
+                <span className="text-red-600 dark:text-red-400">●</span> Solicitações de apoio e campanhas
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-red-600 dark:text-red-400">●</span> Informações sobre o grupo TNB
+                <span className="text-red-600 dark:text-red-400">●</span> Agendamento e sugestões de reportagens
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-red-600 dark:text-red-400">●</span> Envio de relatos e acontecimentos
+                <span className="text-red-600 dark:text-red-400">●</span> Envio de relatos, denúncias e pautas
               </li>
             </ul>
           </div>

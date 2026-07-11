@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { 
   AlertCircle, 
@@ -9,8 +9,14 @@ import {
   Layers,
   Sparkles,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  UserCheck,
+  Clock,
+  PlusCircle,
+  HelpCircle
 } from 'lucide-react';
+import { Campanha } from './CampanhaTab';
+import { Article } from '../types';
 
 interface CountdownState {
   days: number;
@@ -29,6 +35,10 @@ interface ComunicadoTabProps {
   synergyCampaign: string;
   setSynergyCampaign: (campaign: string) => void;
   triggerAlert?: (text: string, type?: 'success' | 'info') => void;
+  campaigns: Campanha[];
+  setCampaigns: React.Dispatch<React.SetStateAction<Campanha[]>>;
+  articles: Article[];
+  setArticles: React.Dispatch<React.SetStateAction<Article[]>>;
 }
 
 export default function ComunicadoTab({ 
@@ -39,10 +49,63 @@ export default function ComunicadoTab({
   setCustomSynergyText,
   synergyCampaign,
   setSynergyCampaign,
-  triggerAlert
+  triggerAlert,
+  campaigns,
+  setCampaigns,
+  articles,
+  setArticles
 }: ComunicadoTabProps) {
+
+  // Action: Toggle campaign status between autorizada and pendente
+  const toggleCampaignStatus = (id: string) => {
+    setCampaigns(prev => prev.map(c => {
+      if (c.id === id) {
+        const newStatus = c.status_campanha === 'autorizada' ? 'pendente' : 'autorizada';
+        if (triggerAlert) {
+          triggerAlert(`Status da campanha de ${c.fullName} alterado para ${newStatus.toUpperCase()}!`, 'success');
+        }
+        return { ...c, status_campanha: newStatus };
+      }
+      return c;
+    }));
+  };
+
+  // Action: Simulate positive financial contribution (+R$ 50)
+  const simulateContribution = (id: string) => {
+    setCampaigns(prev => prev.map(c => {
+      if (c.id === id) {
+        const newAmount = c.arrecadado + 50.00;
+        if (triggerAlert) {
+          triggerAlert(`Simulação de Pix recebido para ${c.fullName}: + R$ 50,00!`, 'success');
+        }
+        return { ...c, arrecadado: newAmount };
+      }
+      return c;
+    }));
+  };
+
+  // Action: Toggle article publication embargo
+  const toggleArticleEmbargo = (id: string) => {
+    setArticles(prev => prev.map(art => {
+      if (art.id === id) {
+        const isCurrentlyEmbargoed = !!art.data_publicacao_autorizada;
+        const newEmbargo = isCurrentlyEmbargoed ? null : '2026-07-17';
+        if (triggerAlert) {
+          triggerAlert(
+            newEmbargo 
+              ? `Artigo "${art.title}" embargado com sucesso até 17/07/2026!` 
+              : `Embargo removido do artigo "${art.title}"! Visível imediatamente no feed principal.`, 
+            'success'
+          );
+        }
+        return { ...art, data_publicacao_autorizada: newEmbargo };
+      }
+      return art;
+    }));
+  };
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-10">
       
       {/* COMUNICADO DE RECESSO CARD */}
       <motion.div 
@@ -158,7 +221,7 @@ export default function ComunicadoTab({
         </div>
       </motion.div>
 
-      {/* DIRETRIZES E COMO PUBLICAR SUA HISTÓRIA (FLUID LAYOUT - NO TABLES) */}
+      {/* DIRETRIZES E COMO PUBLICAR SUA HISTÓRIA */}
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
@@ -191,7 +254,7 @@ export default function ComunicadoTab({
             </p>
           </div>
 
-          {/* Pricing grid - FLUID DESIGN (No tables!) */}
+          {/* Pricing grid - FLUID DESIGN */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-white/80 dark:bg-neutral-900/80 border border-emerald-200 dark:border-emerald-800 p-5 rounded-2xl shadow-xs space-y-2">
               <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
@@ -236,12 +299,12 @@ export default function ComunicadoTab({
           {/* Submission Action Button */}
           <div className="text-center pt-2">
             <a 
-              href="https://wa.me/5596991821516?text=Ol%C3%A1%20Edu%2C%20quero%20preencher%20o%20formul%C3%A1rio%2C%20pode%20me%20mandar%3F"
+              href="https://wa.me/5596991821516?text=Oi%2C%20quero%20uma%20reportagem%20sobre%20mim%20no%20site%20TNB%20NEWS."
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-mono text-xs font-bold py-4 px-6 rounded-2xl transition-all shadow-md hover:scale-102 uppercase tracking-wider"
             >
-              <Phone className="w-4 h-4 fill-white" /> Solicitar Formulário com Eduardo (+55 96 99182-1516)
+              <Phone className="w-4 h-4 fill-white" /> Solicitar com Eduardo (+55 96 99182-1516)
             </a>
           </div>
         </div>
@@ -297,9 +360,8 @@ export default function ComunicadoTab({
                   className="w-full text-xs font-mono p-3 bg-neutral-50 dark:bg-neutral-950 border border-neutral-250 dark:border-neutral-800 rounded-xl text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-indigo-500"
                 >
                   <option value="todas">Todas as Campanhas (Global)</option>
-                  <option value="ratinho">Campanha Ratinho Twister (Alice)</option>
-                  <option value="simon">Campanha Simon (Simon)</option>
-                  <option value="luma">Campanha Luma Ravaglia (Luma)</option>
+                  <option value="alice">Campanha Alice Guedes</option>
+                  <option value="luma">Campanha Luma Ravaglia</option>
                 </select>
               </div>
 
@@ -335,7 +397,7 @@ export default function ComunicadoTab({
                 }}
                 className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 font-mono text-xs font-bold py-3 px-5 rounded-xl transition-all shadow-md uppercase tracking-wider ${
                   isSinergiaActive 
-                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    ? 'bg-red-650 hover:bg-red-700 text-white' 
                     : 'bg-indigo-650 hover:bg-indigo-700 text-white'
                 }`}
               >
@@ -351,12 +413,156 @@ export default function ComunicadoTab({
               </button>
               
               <p className="text-[10px] text-neutral-500 font-mono">
-                *O cruzamento de dados respeita o isolamento de cada aba através de transferência de estado unidirecional.
+                *O cruzamento de dados respeita o isolamento de cada aba através de transferência de estado de reuso.
               </p>
             </div>
           </form>
         </div>
       </motion.div>
+
+      {/* 🛡️ PAINEL DE CONTROLE ADMINISTRATIVO (UNIVERSAL CONTROLS FOR CAMPAIGNS AND EMBARGOS) */}
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="overflow-hidden rounded-3xl border-2 border-neutral-900 bg-gradient-to-br from-neutral-900 to-neutral-950 text-white p-6 md:p-8 shadow-xl dark:border-neutral-800"
+        id="painel-admin-universal"
+      >
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800 pb-4 mb-6">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-800 text-red-500 text-2xl shrink-0 border border-neutral-700 animate-pulse">
+              🛡️
+            </span>
+            <div>
+              <span className="text-[10px] uppercase font-mono tracking-widest bg-red-750 text-white px-2 py-0.5 rounded font-bold">
+                Módulo Administrador Geral
+              </span>
+              <h2 className="font-serif text-xl md:text-2xl font-black text-neutral-50 tracking-tight mt-0.5">
+                Painel de Controle de Status do TNB News
+              </h2>
+            </div>
+          </div>
+          <span className="text-[10px] font-mono bg-neutral-850 border border-neutral-850 text-neutral-400 px-3 py-1 rounded-lg">
+            Acesso Autorizado • v77.77
+          </span>
+        </div>
+
+        <div className="space-y-8 text-xs font-sans">
+          
+          {/* Section 1: Campaign Authorization System */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 border-b border-neutral-850 pb-2">
+              <UserCheck className="w-4 h-4 text-emerald-400" />
+              <h3 className="font-serif font-black uppercase tracking-wider text-neutral-200">
+                1. Sistema de Autorização de Campanhas (`status_campanha`)
+              </h3>
+            </div>
+            <p className="text-neutral-400 leading-relaxed font-sans text-[11px]">
+              Altere o status de autorização de qualquer participante em tempo real. Campanhas configuradas como <strong className="text-amber-500">PENDENTE</strong> desaparecem da Aba Campanha pública e ficam retidas no Admin. Campanhas configuradas como <strong className="text-emerald-400">AUTORIZADA</strong> ficam imediatamente acessíveis. Use os controles para simular Pix diretos e ver o cálculo da Meta atualizar-se ao vivo!
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {campaigns.map((c) => {
+                const isAuthorized = c.status_campanha === 'autorizada';
+                return (
+                  <div key={c.id} className="bg-neutral-850 border border-neutral-800 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                    <div>
+                      <div className="flex justify-between items-start gap-1">
+                        <span className="font-serif font-bold text-neutral-100 text-sm leading-tight block">{c.fullName}</span>
+                        <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${
+                          isAuthorized 
+                            ? 'bg-emerald-950 text-emerald-300 border border-emerald-900/55' 
+                            : 'bg-amber-950 text-amber-300 border border-amber-900/55'
+                        }`}>
+                          {c.status_campanha}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-neutral-400 italic line-clamp-1 mt-1 font-mono">
+                        {c.title}
+                      </p>
+                      <div className="mt-2 pt-2 border-t border-neutral-800 flex justify-between font-mono text-[9px] text-neutral-400">
+                        <span>PIX: {c.arrecadado.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                        <span>Meta: {c.meta.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 pt-1">
+                      <button
+                        onClick={() => toggleCampaignStatus(c.id)}
+                        className={`w-full font-mono text-[9px] py-2 px-3 rounded-lg font-bold uppercase tracking-wider transition-all border ${
+                          isAuthorized 
+                            ? 'bg-amber-950/30 hover:bg-amber-950 text-amber-400 border-amber-900' 
+                            : 'bg-emerald-950/30 hover:bg-emerald-950 text-emerald-400 border-emerald-900'
+                        }`}
+                      >
+                        {isAuthorized ? '🚫 Bloquear (Pendente)' : '✅ Autorizar (Pública)'}
+                      </button>
+                      <button
+                        onClick={() => simulateContribution(c.id)}
+                        className="w-full font-mono text-[9px] py-2 px-3 rounded-lg font-bold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-750 text-neutral-300 border border-neutral-750 inline-flex items-center justify-center gap-1"
+                      >
+                        <PlusCircle className="w-3.5 h-3.5 text-emerald-400" /> Simular Pix (+ R$ 50,00)
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Section 2: Reportage Embargo System */}
+          <div className="space-y-4 pt-4 border-t border-neutral-850">
+            <div className="flex items-center gap-2 border-b border-neutral-850 pb-2">
+              <Clock className="w-4 h-4 text-violet-400" />
+              <h3 className="font-serif font-black uppercase tracking-wider text-neutral-200">
+                2. Sistema de Embargo e Agendamento de Reportagens (`data_publicacao_autorizada`)
+              </h3>
+            </div>
+            <p className="text-neutral-400 leading-relaxed font-sans text-[11px]">
+              Controle a data de embargo de reportagens sensíveis. Reportagens cuja data configurada em <strong className="text-violet-400">data_publicacao_autorizada</strong> seja no futuro (por exemplo, a reportagem especial da Luma em <strong className="text-violet-400">17 de Julho de 2026</strong>) permanecem ocultas do feed principal da redação até a referida data. Remova o embargo ou alterne a data para simular a liberação instantânea e ver a reportagem aparecer ao vivo para o leitor!
+            </p>
+
+            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+              {articles.map((art) => {
+                const isEmbargoed = !!art.data_publicacao_autorizada;
+                return (
+                  <div key={art.id} className="bg-neutral-850 border border-neutral-800 rounded-xl p-3.5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-serif font-black text-neutral-100 text-sm leading-tight">
+                          {art.title}
+                        </span>
+                        <span className={`text-[8px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${
+                          isEmbargoed 
+                            ? 'bg-violet-950 text-violet-300 border border-violet-900/50' 
+                            : 'bg-neutral-800 text-neutral-400 border border-neutral-750'
+                        }`}>
+                          {isEmbargoed ? '⏱️ Embargada' : '🟢 Imediata'}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-neutral-500 font-mono">
+                        Autor: {art.author} • Categoria: {art.category} • Data de Publicação Autorizada: <strong className="text-neutral-300">{art.data_publicacao_autorizada || 'Imediata (Sem Restrição)'}</strong>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => toggleArticleEmbargo(art.id)}
+                      className={`shrink-0 font-mono text-[9px] py-2 px-3.5 rounded-lg font-bold uppercase tracking-wider transition-all border ${
+                        isEmbargoed 
+                          ? 'bg-emerald-950 hover:bg-emerald-900 text-emerald-400 border-emerald-900' 
+                          : 'bg-violet-950 hover:bg-violet-900 text-violet-400 border-violet-900'
+                      }`}
+                    >
+                      {isEmbargoed ? '🔓 Remover Embargo' : '⏱️ Embargar até 17/07/2026'}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+        </div>
+      </motion.div>
+
     </div>
   );
 }

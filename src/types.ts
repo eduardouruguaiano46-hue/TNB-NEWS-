@@ -24,6 +24,7 @@ export interface Article {
   imageUrl?: string;
   technicalSpecs?: { label: string; value: string }[];
   comments: Comment[];
+  data_publicacao_autorizada?: string | null;
 }
 
 export interface SupportCampaign {

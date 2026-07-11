@@ -45,7 +45,7 @@ import { ESOTERIC_NEWS_ITEMS, ESOTERIC_SOURCES, EsotericNewsItem } from './data/
 import { Article, Category, Comment } from './types';
 import HomeTab from './components/HomeTab';
 import ComunicadoTab from './components/ComunicadoTab';
-import CampanhaTab from './components/CampanhaTab';
+import CampanhaTab, { Campanha } from './components/CampanhaTab';
 import GiroEsotericoTab from './components/GiroEsotericoTab';
 import PodcastTab from './components/PodcastTab';
 
@@ -64,6 +64,43 @@ export default function App() {
       };
     });
   });
+
+  // Campaigns State (with dynamic persistence support)
+  const [campaigns, setCampaigns] = useState<Campanha[]>(() => {
+    const saved = localStorage.getItem('tnb_campaigns_v5');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return [
+      {
+        id: 'alice',
+        fullName: 'Alice Guedes',
+        title: 'Campanha de Arrecadação para o Ratinho Resgatado',
+        status_campanha: 'autorizada',
+        meta: 0,
+        arrecadado: 0,
+        whatsappText: 'Oi Alice! Quero usar seu catálogo e também ajudar seu ratinho.',
+        phone: '555399234997',
+        formattedPhone: '+55 53 9923-4997'
+      },
+      {
+        id: 'luma',
+        fullName: 'Luma Ravaglia',
+        title: 'PROMOÇÃO LUMA VAI VER O MGK',
+        status_campanha: 'autorizada',
+        meta: 2500,
+        arrecadado: 180,
+        whatsappText: 'Oi Luma! Quero aproveitar a promoção de tiragens e apoiar sua viagem para ver o MGK!',
+        phone: '5522997358696',
+        formattedPhone: '(22) 99735-8696',
+        pix: 'g0thmystic@gmail.com'
+      }
+    ];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('tnb_campaigns_v5', JSON.stringify(campaigns));
+  }, [campaigns]);
 
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   
@@ -327,8 +364,20 @@ export default function App() {
     triggerAlert('Chave PIX g0thmystic@gmail.com copiada com sucesso!', 'success');
   };
 
+  // Only articles that are authorized (no future embargo relative to our simulated date '2026-07-11')
+  const authorizedArticles = articles.filter(article => {
+    if (article.data_publicacao_autorizada) {
+      const currentDate = new Date('2026-07-11');
+      const articleDate = new Date(article.data_publicacao_autorizada);
+      if (articleDate > currentDate) {
+        return false;
+      }
+    }
+    return true;
+  });
+
   // General Filtered Community News Articles
-  const filteredArticles = articles.filter(article => {
+  const filteredArticles = authorizedArticles.filter(article => {
     const matchesCategory = activeCategory === 'reportagem' || activeCategory === 'todos' || article.category === activeCategory;
     const matchesSearch = 
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -433,7 +482,7 @@ export default function App() {
               <div className="md:border-r border-neutral-200 dark:border-neutral-800 md:px-4 text-center flex flex-col justify-center">
                 <span className="text-[10px] uppercase font-mono tracking-wider text-neutral-500">MUDANÇA DE MAGNITUDE</span>
                 <div className="flex items-center justify-center gap-2 mt-0.5">
-                  <span className="font-serif font-bold text-neutral-900 dark:text-neutral-100">Versão v33.33</span>
+                  <span className="font-serif font-bold text-neutral-900 dark:text-neutral-100">Versão v77.77</span>
                   <button 
                     onClick={() => setIsChangelogOpen(true)}
                     className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-900 dark:bg-red-950 dark:text-red-200 text-[10px] px-2 py-0.5 rounded font-mono font-bold transition-colors"
@@ -544,7 +593,7 @@ export default function App() {
         <main className="max-w-7xl mx-auto px-4 mt-6">
           {activeCategory === 'reportagem' && (
             <HomeTab 
-              articles={articles}
+              articles={authorizedArticles}
               filteredArticles={filteredArticles}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -563,6 +612,10 @@ export default function App() {
               synergyCampaign={synergyCampaign}
               setSynergyCampaign={setSynergyCampaign}
               triggerAlert={triggerAlert}
+              campaigns={campaigns}
+              setCampaigns={setCampaigns}
+              articles={articles}
+              setArticles={setArticles}
             />
           )}
 
@@ -577,6 +630,8 @@ export default function App() {
                 setActiveCategory(tab);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
+              campaigns={campaigns}
+              setCampaigns={setCampaigns}
             />
           )}
 
@@ -851,11 +906,20 @@ export default function App() {
                     <ul className="space-y-4 font-sans text-xs">
                       <li className="flex flex-col gap-1 border-b border-neutral-100 dark:border-neutral-850 pb-3">
                         <div className="flex justify-between items-center">
-                          <span className="font-mono font-bold text-red-600 dark:text-red-400">v33.33 (A Era das Abas Inteligentes)</span>
+                          <span className="font-mono font-bold text-red-600 dark:text-red-400">v77.77 (O Ecossistema da Comunidade)</span>
                           <span className="text-[10px] font-mono text-neutral-400">11 de Julho de 2026</span>
                         </div>
-                        <p className="text-neutral-600 dark:text-neutral-400 mt-1">
-                          **Atualização Massiva de Magnitude:** Fim definitivo da bagunça e consolidação do portal em abas estanques isoladas. Extinção da Aba Divulgação e criação da **Aba Campanha** como repositório único de apoio solidário. Introdução do **Protocolo de Sinergia de Conteúdo** para cruzamento autorizado de alertas administrativos e campanhas de recesso.
+                        <p className="text-neutral-600 dark:text-neutral-400 mt-1 font-sans">
+                          **Atualização Massiva de Magnitude:** Consolidação total do ecossistema de participantes da comunidade. Padronização estrita de nomes completos exatos de cadastro (Alice Guedes, Simon Astrólogo e Luma Oliveira Ravaglia). Reformulação da Fale com a Redação em duplo botão de igual peso visual com preenchimentos automáticos dedicados. Implementação do sistema de **Autorização de Campanhas** (`status_campanha`) e **Embargo de Reportagens** (`data_publicacao_autorizada`) gerenciados em tempo real a partir de um novo Painel de Controle Administrativo integrado, com simulação dinâmica de contribuições via Pix.
+                        </p>
+                      </li>
+                      <li className="flex flex-col gap-1 border-b border-neutral-100 dark:border-neutral-850 pb-3">
+                        <div className="flex justify-between items-center">
+                          <span className="font-mono font-bold text-neutral-400">v33.33 (A Era das Abas Inteligentes)</span>
+                          <span className="text-[10px] font-mono text-neutral-400">11 de Julho de 2026</span>
+                        </div>
+                        <p className="text-neutral-600 mt-1">
+                          **Fatos de Magnitude:** Fim definitivo da bagunça e consolidação do portal em abas estanques isoladas. Extinção da Aba Divulgação e criação da **Aba Campanha** como repositório único de apoio solidário. Introdução do **Protocolo de Sinergia de Conteúdo** para cruzamento autorizado de alertas administrativos e campanhas de recesso.
                         </p>
                       </li>
                       <li className="flex flex-col gap-1 border-b border-neutral-100 dark:border-neutral-850 pb-3">
@@ -957,17 +1021,26 @@ export default function App() {
             <div className="md:col-span-4 space-y-4">
               <h3 className="font-mono text-xs uppercase tracking-widest text-white font-bold border-b border-neutral-800 pb-1">Redação e Contato</h3>
               <p className="text-xs text-neutral-400 font-serif leading-relaxed">
-                Tem uma sugestão de matéria ou deseja falar diretamente com nossos repórteres? Acesse nosso canal oficial no WhatsApp.
+                Solicite sua campanha solidária ou sugira uma reportagem diretamente com nossa equipe no WhatsApp: <strong className="text-white">+55 96 99182-1516</strong>
               </p>
               
-              <div className="pt-1">
+              <div className="flex flex-col gap-2 pt-1">
                 <a 
-                  href={redacaoWhatsAppLink}
+                  href={`https://wa.me/5596991821516?text=${encodeURIComponent("Oi, sou membro da comunidade Tarot no Bolso e quero publicar minha campanha solidária no portal TNB NEWS.")}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white font-mono text-xs font-bold py-2.5 px-4 rounded-lg transition-colors uppercase tracking-wider"
+                  className="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-[10px] font-bold py-2.5 px-3 rounded transition-colors uppercase tracking-wider text-center shadow-sm"
                 >
-                  <Phone className="w-4 h-4" /> WhatsApp: {redacaoWhatsAppNumber}
+                  <Phone className="w-3.5 h-3.5 fill-white" /> Quero minha campanha
+                </a>
+
+                <a 
+                  href={`https://wa.me/5596991821516?text=${encodeURIComponent("Oi, quero uma reportagem sobre mim no site TNB NEWS.")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 bg-neutral-800 hover:bg-neutral-750 text-neutral-200 border border-neutral-750 font-mono text-[10px] font-bold py-2.5 px-3 rounded transition-colors uppercase tracking-wider text-center shadow-sm"
+                >
+                  <Phone className="w-3.5 h-3.5 text-emerald-500" /> Quero uma reportagem
                 </a>
               </div>
 
