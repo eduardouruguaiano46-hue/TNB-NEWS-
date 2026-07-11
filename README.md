@@ -59,6 +59,8 @@ Para evitar quaisquer problemas de carregamento de imagens no build de produçã
 - Todas as 20 matérias (fatos comunitários e notícias esotéricas) utilizam URLs absolutas hospedadas diretamente em CDN.
 - Isso garante 100% de estabilidade de carregamento em qualquer ambiente de hospedagem estática, sem depender de assets locais no diretório do projeto e proporcionando carregamento ultra-rápido para os usuários do portal.
 - **Aviso de Recesso e Contador Regressivo:** Implementação na página inicial do Comunicado Oficial sobre o Recesso de uma semana da comunidade e do site TNB News, acompanhado de um contador regressivo em tempo real programado para o encerramento em 17 de Julho de 2026 às 00h00.
+- **Campanha de Apoio ao Ratinho Twister:** Destaque solidário com tabelas de preço e fotos atualizadas via Postimg CDN, canal de comunicação direto via WhatsApp e QR Code integrados.
+- **Política de Atualização do Site:** O site permanece aberto à comunidade para divulgações periódicas e ações solidárias durante o recesso editorial de matérias comuns.
 
 ---
 

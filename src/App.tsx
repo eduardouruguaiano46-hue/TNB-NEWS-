@@ -31,7 +31,9 @@ import {
   HelpCircle,
   Globe,
   Radio,
-  Sparkle
+  Sparkle,
+  Heart,
+  QrCode
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { INITIAL_ARTICLES, TEAM_MEMBERS } from './data/news';
@@ -85,6 +87,9 @@ export default function App() {
 
   // Version/Changelog Modal
   const [isChangelogOpen, setIsChangelogOpen] = useState(false);
+
+  // Campaign Image Modal Zoom
+  const [expandedCampaignImage, setExpandedCampaignImage] = useState<string | null>(null);
 
   // Countdown Timer to July 17, 2026, 00:00:00 (Fim do Recesso)
   const [countdown, setCountdown] = useState({
@@ -638,13 +643,13 @@ export default function App() {
                     <span className="text-red-500">🌐</span> Situação do Site TNB News
                   </h3>
                   <p className="leading-relaxed">
-                    Seguindo a mesma decisão da administração, o site TNB News também entrará em modo de recesso. Durante esses 7 (sete) dias:
+                    Seguindo a decisão da administração, o site TNB News entrará em modo de recesso parcial. Ele é <strong>aberto à comunidade</strong> para atualizações periódicas se alguém precisar divulgar algo, mas não receberá matérias jornalísticas comuns:
                   </p>
                   <ul className="mt-2.5 space-y-1.5 font-mono text-xs">
-                    <li className="flex items-center gap-1.5 text-red-600 dark:text-red-400">❌ Não serão publicadas novas reportagens;</li>
-                    <li className="flex items-center gap-1.5 text-red-600 dark:text-red-400">❌ Não haverá atualizações de conteúdo;</li>
-                    <li className="flex items-center gap-1.5 text-red-600 dark:text-red-400">❌ Recursos em desenvolvimento continuarão indisponíveis;</li>
-                    <li className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">✅ O site permanecerá online apenas para consulta das matérias já publicadas.</li>
+                    <li className="flex items-center gap-1.5 text-red-600 dark:text-red-400">❌ Não serão publicadas novas reportagens jornalísticas gerais;</li>
+                    <li className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">✅ O site é aberto à comunidade para divulgações e atualizações periódicas;</li>
+                    <li className="flex items-center gap-1.5 text-red-600 dark:text-red-400">❌ Recursos complexos em desenvolvimento continuarão indisponíveis;</li>
+                    <li className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">✅ O site permanecerá online para consulta das matérias já publicadas e ações de apoio.</li>
                   </ul>
                 </div>
               </div>
@@ -680,6 +685,197 @@ export default function App() {
             {/* Agradecimentos Footer */}
             <div className="mt-5 text-center text-xs font-mono bg-neutral-100 dark:bg-neutral-900/60 p-2.5 rounded-lg text-neutral-600 dark:text-neutral-400">
               🙏 Agradecemos a compreensão, o respeito e o apoio de todos durante esse período. Esperamos retornar em breve com novas reportagens, melhorias no aplicativo e novidades para a comunidade. — <strong>Administração TNB News</strong>
+            </div>
+          </motion.div>
+
+          {/* CAMPANHA BENEFICENTE - RATINHO TWISTER RESGATADO */}
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 overflow-hidden rounded-2xl border-2 border-violet-500 bg-gradient-to-br from-violet-50/90 via-[#fefefe]/95 to-pink-50/90 p-6 shadow-xl dark:from-neutral-900/90 dark:via-neutral-900/95 dark:to-neutral-950/90 dark:border-violet-600"
+            id="campanha-arrecadacao-ratinho"
+          >
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-6">
+              <div className="flex items-center gap-3">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-violet-600 dark:bg-violet-950/80 dark:text-violet-400 text-2xl">
+                  🐭
+                </span>
+                <div>
+                  <span className="text-[10px] uppercase font-mono tracking-widest bg-violet-600 text-white dark:bg-violet-950 dark:text-violet-300 px-2 py-0.5 rounded font-bold">
+                    Campanha Solidária
+                  </span>
+                  <h2 className="font-serif text-xl md:text-2xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight mt-0.5 flex items-center gap-2">
+                    Ajude um Ratinho Resgatado: <span className="text-violet-600 dark:text-violet-400 font-medium font-sans text-lg md:text-xl">Transformando Medo em Cuidado</span>
+                  </h2>
+                </div>
+              </div>
+              <div className="bg-violet-100 dark:bg-violet-950/90 border border-violet-200 dark:border-violet-900 px-4 py-2 rounded-xl flex items-center gap-2">
+                <Heart className="w-5 h-5 text-pink-500 animate-beat fill-pink-500" />
+                <span className="font-mono text-xs font-bold text-violet-900 dark:text-violet-300">
+                  Apoie o Tratamento do Twister
+                </span>
+              </div>
+            </div>
+
+            {/* Main Content Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              
+              {/* Left Side: Campaign details (7 cols) */}
+              <div className="lg:col-span-7 space-y-4 font-sans text-sm text-neutral-700 dark:text-neutral-300">
+                <p className="leading-relaxed text-base font-semibold text-neutral-900 dark:text-neutral-100">
+                  Estamos divulgando o catálogo de produtos da Alice para arrecadar fundos e custear o tratamento veterinário de um <span className="text-violet-600 dark:text-violet-400 font-bold">ratinho Twister</span> resgatado de uma situação extrema de negligência.
+                </p>
+
+                <div className="bg-neutral-50 dark:bg-neutral-950 p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 leading-relaxed space-y-3">
+                  <div className="flex items-start gap-2">
+                    <span className="text-violet-500 text-base mt-0.5">⚠️</span>
+                    <p>
+                      Ele seria descartado sob a justificativa de ser "agressivo", mas descobrimos rapidamente que seu comportamento hostil era apenas um reflexo de dor intensa, medo extremo e traumas acumulados.
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-red-500 text-base mt-0.5">🩺</span>
+                    <p>
+                      <strong>A situação atual dele é extremamente delicada:</strong> Devido à privação prolongada de água e comida de qualidade, seu crescimento foi gravemente afetado, tornando-o consideravelmente menor e mais magro do que o esperado para a espécie. A desidratação crônica severa comprometeu a sua produção de saliva, o que dificulta muito a sua autolimpeza natural e gera riscos constantes de novas complicações.
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-emerald-500 text-base mt-0.5">🍀</span>
+                    <p>
+                      Hoje, o pequeno sobrevivente já está sob os primeiros cuidados paliativos. Porém, precisamos da união da comunidade para garantir sua <strong>alimentação especial de reabilitação, itens de enriquecimento ambiental e consultas veterinárias especializadas</strong> para que ele tenha a vida digna e o bem-estar que merece!
+                    </p>
+                  </div>
+                </div>
+
+                {/* Call to Action Card */}
+                <div className="bg-gradient-to-r from-violet-500 to-pink-500 text-white rounded-2xl p-5 shadow-lg border border-violet-400/20">
+                  <h3 className="font-serif font-black text-base uppercase tracking-wider flex items-center gap-2 mb-2">
+                    ❤️ Como você pode ajudar?
+                  </h3>
+                  <p className="text-xs md:text-sm mb-4 leading-relaxed opacity-95">
+                    Você pode contribuir diretamente <strong>comprando itens do catálogo ao lado</strong> (lembrando que os valores foram atualizados e qualquer detalhe ou informação sobre as tabelas deve ser consultado diretamente via WhatsApp), enviando uma doação de qualquer valor ou compartilhando esta campanha. Toda ajuda faz diferença!
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                    <a 
+                      href="https://wa.me/555399234997"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-mono text-xs font-bold py-3 px-5 rounded-xl transition-all shadow-md hover:scale-102 uppercase tracking-wider"
+                    >
+                      <Phone className="w-4 h-4 fill-white" /> Chamar Alice no WhatsApp
+                    </a>
+                    <div className="text-center sm:text-left text-xs font-mono">
+                      <span className="block opacity-75">Contato da Tutora (Alice):</span>
+                      <strong className="text-white">+55 (53) 9923-4997</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side: Media Showcase & Price Lists (5 cols) */}
+              <div className="lg:col-span-5 space-y-5">
+                
+                {/* Dynamic instructions */}
+                <p className="text-[10px] uppercase font-mono tracking-wider text-center text-neutral-500 dark:text-neutral-400">
+                  🔍 Clique nas imagens abaixo para ampliá-las e ver as tabelas
+                </p>
+
+                {/* Photo Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3">
+                  
+                  {/* Photo of Rat */}
+                  <div 
+                    onClick={() => setExpandedCampaignImage('https://i.postimg.cc/FdgxFnmv/image.jpg')}
+                    className="group relative cursor-zoom-in overflow-hidden rounded-xl border border-violet-200 dark:border-violet-800 shadow-sm aspect-square bg-neutral-900"
+                  >
+                    <img 
+                      src="https://i.postimg.cc/FdgxFnmv/image.jpg" 
+                      alt="Foto do Ratinho Resgatado" 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-3">
+                      <div>
+                        <span className="text-[10px] uppercase font-mono tracking-widest bg-violet-600 text-white px-1.5 py-0.5 rounded font-bold">
+                          Foto Oficial
+                        </span>
+                        <h4 className="text-xs font-bold text-white mt-1">O Ratinho Twister Resgatado</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price List 1 */}
+                  <div 
+                    onClick={() => setExpandedCampaignImage('https://i.postimg.cc/VdHWNtyF/IMG-20260711-WA0997.jpg')}
+                    className="group relative cursor-zoom-in overflow-hidden rounded-xl border border-violet-200 dark:border-violet-800 shadow-sm aspect-square bg-neutral-900"
+                  >
+                    <img 
+                      src="https://i.postimg.cc/VdHWNtyF/IMG-20260711-WA0997.jpg" 
+                      alt="Tabela de Preços 1" 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-3">
+                      <div>
+                        <span className="text-[10px] uppercase font-mono tracking-widest bg-pink-600 text-white px-1.5 py-0.5 rounded font-bold">
+                          Catálogo 1
+                        </span>
+                        <h4 className="text-xs font-bold text-white mt-1">Tabela de Preços 1</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price List 2 */}
+                  <div 
+                    onClick={() => setExpandedCampaignImage('https://i.postimg.cc/MvrmGBkf/IMG-20260711-WA0998.jpg')}
+                    className="group relative cursor-zoom-in overflow-hidden rounded-xl border border-violet-200 dark:border-violet-800 shadow-sm aspect-square bg-neutral-900"
+                  >
+                    <img 
+                      src="https://i.postimg.cc/MvrmGBkf/IMG-20260711-WA0998.jpg" 
+                      alt="Tabela de Preços 2" 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-3">
+                      <div>
+                        <span className="text-[10px] uppercase font-mono tracking-widest bg-pink-600 text-white px-1.5 py-0.5 rounded font-bold">
+                          Catálogo 2
+                        </span>
+                        <h4 className="text-xs font-bold text-white mt-1">Tabela de Preços 2</h4>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* QR Code Segment */}
+                <div className="bg-white dark:bg-neutral-900 border border-violet-200 dark:border-violet-800 p-4 rounded-xl flex items-center gap-4 shadow-sm">
+                  <div 
+                    onClick={() => setExpandedCampaignImage('https://i.postimg.cc/5YczC5pk/image.jpg')}
+                    className="bg-neutral-50 dark:bg-neutral-950 p-2 rounded-lg border border-neutral-200 dark:border-neutral-850 shrink-0 cursor-zoom-in hover:opacity-90 transition-opacity"
+                  >
+                    <img 
+                      src="https://i.postimg.cc/5YczC5pk/image.jpg" 
+                      alt="WhatsApp QR Code" 
+                      className="w-24 h-24 object-cover rounded"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <div className="space-y-1 text-xs font-sans text-neutral-600 dark:text-neutral-400">
+                    <h4 className="font-serif font-black text-neutral-900 dark:text-white flex items-center gap-1">
+                      <QrCode className="w-4 h-4 text-violet-500" />
+                      QR Code WhatsApp / Pix
+                    </h4>
+                    <p className="leading-tight">
+                      Aponte a câmera do seu celular para escanear a imagem ao lado (ou clique nela para ampliar), para entrar em contato diretamente com a Alice no WhatsApp!
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
           </motion.div>
 
@@ -1573,6 +1769,37 @@ export default function App() {
                     Entendido
                   </button>
                 </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* MODAL ZOOM CAMPANHA DO RATINHO */}
+        <AnimatePresence>
+          {expandedCampaignImage && (
+            <div 
+              className="fixed inset-0 bg-neutral-950/85 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+              onClick={() => setExpandedCampaignImage(null)}
+            >
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="relative bg-white dark:bg-neutral-900 rounded-2xl p-2 max-w-3xl w-full shadow-2xl overflow-hidden border border-neutral-200 dark:border-neutral-800"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button 
+                  onClick={() => setExpandedCampaignImage(null)}
+                  className="absolute top-4 right-4 bg-neutral-950/75 hover:bg-neutral-900 text-white p-2 rounded-full transition-colors z-10"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+                <img 
+                  src={expandedCampaignImage} 
+                  alt="Imagem Ampliada - Campanha Ratinho Resgatado" 
+                  className="w-full h-auto max-h-[80vh] object-contain rounded-lg mx-auto"
+                  referrerPolicy="no-referrer"
+                />
               </motion.div>
             </div>
           )}
