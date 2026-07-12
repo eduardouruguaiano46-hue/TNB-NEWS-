@@ -37,7 +37,10 @@ import {
   Megaphone,
   Users,
   Shield,
-  Ticket
+  Ticket,
+  Compass,
+  CreditCard,
+  Smartphone
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { INITIAL_ARTICLES, TEAM_MEMBERS } from './data/news';
@@ -48,11 +51,154 @@ import ComunicadoTab from './components/ComunicadoTab';
 import CampanhaTab, { Campanha } from './components/CampanhaTab';
 import GiroEsotericoTab from './components/GiroEsotericoTab';
 import PodcastTab from './components/PodcastTab';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { onSnapshot, doc, getDocFromServer } from 'firebase/firestore';
+import { auth, db } from './lib/firebase';
+import AuthModal from './components/AuthModal';
+import LoginScreen from './components/LoginScreen';
+import AliceTab from './components/AliceTab';
+import EsoterismoTab from './components/EsoterismoTab';
+import ContratarTab from './components/ContratarTab';
+import DownloadsTab from './components/DownloadsTab';
 
 export default function App() {
   // Navigation & Filtering
   const [activeCategory, setActiveCategory] = useState<string>('reportagem');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Auth State & Persistence
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [userZodiacSign, setUserZodiacSign] = useState('Áries');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [brasiliaTime, setBrasiliaTime] = useState('');
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+
+  // Estados de Conexão e Rede
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [firestoreConnected, setFirestoreConnected] = useState<boolean | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  // Sincronizar relógio em tempo real no fuso de Brasília
+  useEffect(() => {
+    const updateClock = () => {
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('pt-BR', {
+        timeZone: 'America/Sao_Paulo',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+      setBrasiliaTime(formatter.format(now));
+    };
+
+    updateClock();
+    const interval = setInterval(updateClock, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Verificar conexão com o Firestore (com timeout para evitar hangs)
+  const verifyConnection = async () => {
+    if (!navigator.onLine) {
+      setIsOnline(false);
+      setFirestoreConnected(false);
+      return;
+    }
+    
+    setIsConnecting(true);
+    try {
+      const connectionPromise = getDocFromServer(doc(db, 'test', 'connection'));
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout ao conectar com o banco de dados.')), 4000)
+      );
+      
+      await Promise.race([connectionPromise, timeoutPromise]);
+      setFirestoreConnected(true);
+      setProfileError(null);
+    } catch (err: any) {
+      console.warn("Firestore connection check info:", err);
+      // Se for apenas ausência de documento de teste, conta como conectado (pois comunicou com o servidor)
+      if (err.code !== 'unavailable' && !err.message?.includes('Timeout')) {
+        setFirestoreConnected(true);
+        setProfileError(null);
+      } else {
+        setFirestoreConnected(false);
+        setProfileError("Não foi possível conectar com o servidor. Verifique sua rede.");
+      }
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
+  // Monitorar status da internet do navegador
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      verifyConnection();
+      triggerAlert('Sua conexão com a internet foi restabelecida!', 'success');
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      setFirestoreConnected(false);
+      triggerAlert('Você está offline. Exibindo dados locais e em cache.', 'info');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Executar verificação inicial
+    verifyConnection();
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Monitorar mudanças no Auth do Firebase
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setAuthLoading(false);
+      if (user) {
+        const justLoggedIn = sessionStorage.getItem('tnb_just_logged_in') === 'true';
+        if (justLoggedIn) {
+          setShowWelcomePopup(true);
+          sessionStorage.removeItem('tnb_just_logged_in');
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Monitorar o signo do usuário em tempo real do Firestore
+  useEffect(() => {
+    if (!currentUser) {
+      setUserZodiacSign('Áries');
+      return;
+    }
+    const userDocRef = doc(db, 'users', currentUser.uid);
+    const unsubscribe = onSnapshot(userDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.zodiacSign) {
+          setUserZodiacSign(data.zodiacSign);
+        }
+      }
+      setFirestoreConnected(true);
+      setProfileError(null);
+    }, (error) => {
+      console.warn("Erro ao carregar signo do usuário do Firestore:", error);
+      setFirestoreConnected(false);
+      setProfileError("Não foi possível conectar com o servidor para sincronizar seu perfil.");
+    });
+    return () => unsubscribe();
+  }, [currentUser]);
   
   // Articles state (merged with real localStorage comments for persistent, functional discussions)
   const [articles, setArticles] = useState<Article[]>(() => {
@@ -155,6 +301,22 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('tnb_sinergia_campaign', synergyCampaign);
   }, [synergyCampaign]);
+
+  const handleAddCampaign = (newCamp: any) => {
+    setCampaigns(prev => {
+      const updated = [newCamp, ...prev];
+      localStorage.setItem('tnb_campaigns_v6', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleAddArticle = (newArt: any) => {
+    setArticles(prev => {
+      const updated = [newArt, ...prev];
+      // Sync to local articles
+      return updated;
+    });
+  };
 
   // Audio Player State (Podcast TNB News)
   const audioUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663627993377/jKchuOYKJaCTotJs.mp3';
@@ -344,12 +506,12 @@ export default function App() {
     triggerAlert('Comentário removido.', 'info');
   };
 
-  const triggerAlert = (text: string, type: 'success' | 'info' = 'success') => {
+  function triggerAlert(text: string, type: 'success' | 'info' = 'success') {
     setAlertMessage({ text, type });
     setTimeout(() => {
       setAlertMessage(null);
     }, 4000);
-  };
+  }
 
   const handleShare = (title: string) => {
     navigator.clipboard.writeText(window.location.href);
@@ -448,230 +610,335 @@ export default function App() {
 
         {/* NEWSPAPER SUPERIOR HEADER */}
         <header className="border-b-4 border-red-700 dark:border-red-600">
-          <div className="max-w-7xl mx-auto px-4 pt-4 pb-2">
-            
-            {/* Top micro bar */}
-            <div className="flex flex-wrap justify-between items-center text-xs font-mono tracking-widest text-neutral-500 border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-4">
-              <span className="uppercase font-semibold text-red-600 dark:text-red-400">Edição Especial TNB</span>
-              <span className="uppercase">São Paulo, Sexta-feira, 10 de Julho de 2026</span>
-              <span className="font-semibold text-neutral-800 dark:text-neutral-300">CÉU DE HOJE: SOL EM CÂNCER, LUA EM TOURO</span>
-            </div>
-
-            {/* Core Newspaper Brand Logo & Theme Toggle */}
-            <div className="flex justify-between items-center my-4 md:my-6">
-              <div className="w-10"></div> {/* Spacer for symmetry */}
+            <div className="max-w-7xl mx-auto px-4 pt-4 pb-2">
               
-              <div className="text-center">
-                <a href="/" className="inline-block hover:opacity-95 transition-opacity" onClick={(e) => { e.preventDefault(); setActiveCategory('reportagem'); setSelectedArticle(null); }}>
-                  <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-red-700 dark:text-red-500 uppercase select-none">
-                    TNB NEWS
-                  </h1>
-                </a>
-                <p className="font-serif italic text-sm md:text-lg text-neutral-600 dark:text-neutral-400 tracking-wide mt-2">
-                  Tarot no Bolso News — O Portal de Jornalismo Esotérico Sem Simulações
-                </p>
-              </div>
-
-              {/* Modern User Theme Switcher */}
-              <button 
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className="p-2.5 rounded-full border border-neutral-200 hover:border-red-500 bg-white dark:bg-neutral-900 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 transition-all hover:scale-105"
-                title={isDarkMode ? 'Mudar para Modo Claro' : 'Mudar para Modo Escuro'}
-                id="btn-toggle-theme"
-              >
-                {isDarkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-red-600" />}
-              </button>
-            </div>
-
-            {/* Newspaper Meta / Slogan Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 border-y-2 border-neutral-900 dark:border-neutral-800 py-3 text-center md:text-left gap-4 md:gap-0 font-serif text-sm">
-              <div className="md:border-r border-neutral-200 dark:border-neutral-800 md:pr-4 flex items-center justify-center md:justify-start gap-2">
-                <Newspaper className="w-4 h-4 text-red-600 dark:text-red-400" />
-                <span>Responsabilidade jornalística e fatos reais sem simulações</span>
-              </div>
-              
-              <div className="md:border-r border-neutral-200 dark:border-neutral-800 md:px-4 text-center flex flex-col justify-center">
-                <span className="text-[10px] uppercase font-mono tracking-wider text-neutral-500">MUDANÇA DE MAGNITUDE</span>
-                <div className="flex items-center justify-center gap-2 mt-0.5">
-                  <span className="font-serif font-bold text-neutral-900 dark:text-neutral-100">Versão v77.77</span>
+              {/* Banner de Status de Conexão */}
+              {(!isOnline || firestoreConnected === false) && (
+                <div className="mb-4 bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-500 p-3.5 rounded-r-xl flex items-center justify-between gap-3 text-amber-900 dark:text-amber-200 shadow-sm">
+                  <div className="flex items-center gap-2.5">
+                    <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <div>
+                      <p className="text-xs font-mono font-bold uppercase tracking-wider">Conexão Instável / Modo Offline</p>
+                      <p className="text-xs font-serif mt-0.5 opacity-90">
+                        {!isOnline 
+                          ? 'Sua conexão com a internet parece estar desativada. Exibindo dados locais salvos.' 
+                          : 'Não foi possível sincronizar com o banco de dados. Exibindo dados em cache.'}
+                      </p>
+                    </div>
+                  </div>
                   <button 
-                    onClick={() => setIsChangelogOpen(true)}
-                    className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-900 dark:bg-red-950 dark:text-red-200 text-[10px] px-2 py-0.5 rounded font-mono font-bold transition-colors"
-                    id="btn-ver-versao"
+                    onClick={() => verifyConnection()}
+                    disabled={isConnecting}
+                    className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-mono text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer flex items-center gap-1.5 shrink-0 disabled:opacity-50"
                   >
-                    <Sparkles className="w-3 h-3 text-red-600 dark:text-red-400" />
-                    HISTÓRICO
+                    <RefreshCw className={`w-3 h-3 ${isConnecting ? 'animate-spin' : ''}`} />
+                    {isConnecting ? 'Conectando...' : 'Reconectar'}
+                  </button>
+                </div>
+              )}
+              
+              {/* Top micro bar */}
+              <div className="flex flex-wrap justify-between items-center text-xs font-mono tracking-widest text-neutral-500 border-b border-neutral-200 dark:border-neutral-800 pb-2 mb-4">
+                <span className="uppercase font-semibold text-red-600 dark:text-red-400">Edição Especial TNB</span>
+                <span className="uppercase">{brasiliaTime || 'São Paulo, Sexta-feira, 10 de Julho de 2026'}</span>
+                <span className="font-semibold text-neutral-800 dark:text-neutral-300">CÉU DE HOJE: SOL EM CÂNCER, LUA EM TOURO</span>
+              </div>
+
+              {/* Core Newspaper Brand Logo & Theme Toggle */}
+              <div className="flex justify-between items-center my-4 md:my-6">
+                <div className="w-10"></div> {/* Spacer for symmetry */}
+                
+                <div className="text-center">
+                  <a href="/" className="inline-block hover:opacity-95 transition-opacity" onClick={(e) => { e.preventDefault(); setActiveCategory('reportagem'); setSelectedArticle(null); }}>
+                    <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-red-700 dark:text-red-500 uppercase select-none">
+                      TNB NEWS
+                    </h1>
+                  </a>
+                  <p className="font-serif italic text-sm md:text-lg text-neutral-600 dark:text-neutral-400 tracking-wide mt-2">
+                    Tarot no Bolso News — O Portal de Jornalismo Esotérico Sem Simulações
+                  </p>
+                </div>
+
+                {/* Modern User Theme Switcher */}
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setIsDarkMode(!isDarkMode)}
+                    className="p-2.5 rounded-full border border-neutral-200 hover:border-red-500 bg-white dark:bg-neutral-900 dark:border-neutral-800 text-neutral-700 dark:text-neutral-200 transition-all hover:scale-105 cursor-pointer"
+                    title={isDarkMode ? 'Mudar para Modo Claro' : 'Mudar para Modo Escuro'}
+                    id="btn-toggle-theme"
+                  >
+                    {isDarkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-red-600" />}
                   </button>
                 </div>
               </div>
 
-              <div className="md:pl-4 flex items-center justify-center md:justify-end gap-2.5">
-                <span className="italic text-neutral-600 dark:text-neutral-400">"A verdade revelada pelas cartas, analisada pelos fatos."</span>
+              {/* Newspaper Meta / Slogan Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 border-y-2 border-neutral-900 dark:border-neutral-800 py-3 text-center md:text-left gap-4 md:gap-0 font-serif text-sm">
+                <div className="md:border-r border-neutral-200 dark:border-neutral-800 md:pr-4 flex items-center justify-center md:justify-start gap-2">
+                  <Newspaper className="w-4 h-4 text-red-600 dark:text-red-400" />
+                  <span>Responsabilidade jornalística e fatos reais sem simulações</span>
+                </div>
+                
+                <div className="md:border-r border-neutral-200 dark:border-neutral-800 md:px-4 text-center flex flex-col justify-center">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-neutral-500">MUDANÇA DE MAGNITUDE</span>
+                  <div className="flex items-center justify-center gap-2 mt-0.5">
+                    <span className="font-serif font-bold text-neutral-900 dark:text-neutral-100">Versão v89.99</span>
+                    <button 
+                      onClick={() => setIsChangelogOpen(true)}
+                      className="inline-flex items-center gap-1 bg-red-100 hover:bg-red-200 text-red-900 dark:bg-red-950 dark:text-red-200 text-[10px] px-2 py-0.5 rounded font-mono font-bold transition-colors"
+                      id="btn-ver-versao"
+                    >
+                      <Sparkles className="w-3 h-3 text-red-600 dark:text-red-400" />
+                      HISTÓRICO
+                    </button>
+                  </div>
+                </div>
+
+                <div className="md:pl-4 flex items-center justify-center md:justify-end gap-2.5">
+                  <span className="italic text-neutral-600 dark:text-neutral-400">"A verdade revelada pelas cartas, analisada pelos fatos."</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* STICKY NAVIGATION TABS & GLOBAL SEARCH */}
-          <div className="bg-neutral-900 text-white sticky top-0 z-30 shadow-md border-b border-red-600">
-            <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-stretch">
-              
-              {/* Category tabs */}
-              <nav className="flex flex-wrap items-center overflow-x-auto whitespace-nowrap scrollbar-none md:gap-1">
-                <button 
-                  onClick={() => { setActiveCategory('reportagem'); setSelectedArticle(null); }}
-                  className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
-                    activeCategory === 'reportagem' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
-                  }`}
-                  id="nav-category-reportagem"
-                >
-                  <Newspaper className="w-3.5 h-3.5 text-red-400" />
-                  Reportagem
-                </button>
-                <button 
-                  onClick={() => { setActiveCategory('comunicado'); setSelectedArticle(null); }}
-                  className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
-                    activeCategory === 'comunicado' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
-                  }`}
-                  id="nav-category-comunicado"
-                >
-                  <Megaphone className="w-3.5 h-3.5 text-red-400" />
-                  Comunicado
-                </button>
-                <button 
-                  onClick={() => { setActiveCategory('campanha'); setSelectedArticle(null); }}
-                  className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
-                    activeCategory === 'campanha' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
-                  }`}
-                  id="nav-category-campanha"
-                >
-                  <Heart className="w-3.5 h-3.5 text-red-400" />
-                  Campanha
-                </button>
-                <button 
-                  onClick={() => { setActiveCategory('giro-esoterico'); setSelectedArticle(null); }}
-                  className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
-                    activeCategory === 'giro-esoterico' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
-                  }`}
-                  id="nav-category-giro-esoterico"
-                >
-                  <Globe className="w-3.5 h-3.5 text-red-400" />
-                  Giro Esotérico
-                </button>
-                <button 
-                  onClick={() => { setActiveCategory('podcast'); setSelectedArticle(null); }}
-                  className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
-                    activeCategory === 'podcast' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
-                  }`}
-                  id="nav-category-podcast"
-                >
-                  <Volume2 className="w-3.5 h-3.5 text-red-400 animate-pulse" />
-                  Podcast
-                </button>
-              </nav>
-
-              {/* Global search input (only visible/functional for News Feed) */}
-              <div className="relative border-t md:border-t-0 md:border-l border-neutral-800 flex items-center bg-neutral-800/40">
-                <span className="absolute left-3 text-neutral-400">
-                  <Search className="w-4 h-4" />
-                </span>
-                <input 
-                  type="text"
-                  placeholder="Buscar no portal..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    if (activeCategory !== 'reportagem') {
-                      setActiveCategory('reportagem');
-                    }
-                  }}
-                  className="w-full md:w-64 pl-9 pr-10 py-2.5 text-xs bg-transparent text-neutral-100 placeholder-neutral-400 focus:outline-none focus:bg-neutral-800 font-mono"
-                  id="input-pesquisar-noticias"
-                />
-                {searchQuery && (
+            {/* STICKY NAVIGATION TABS & GLOBAL SEARCH */}
+            <div className="bg-neutral-900 text-white sticky top-0 z-30 shadow-md border-b border-red-600">
+              <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-stretch">
+                
+                {/* Category tabs */}
+                <nav className="flex flex-wrap items-center overflow-x-auto whitespace-nowrap scrollbar-none md:gap-1">
                   <button 
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 text-neutral-400 hover:text-white"
+                    onClick={() => { setActiveCategory('reportagem'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'reportagem' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-reportagem"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <Newspaper className="w-3.5 h-3.5 text-red-400" />
+                    Reportagem
                   </button>
-                )}
+                  <button 
+                    onClick={() => { setActiveCategory('alice'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'alice' ? 'border-indigo-500 bg-neutral-800 text-indigo-400 font-black' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-alice"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
+                    Alice AI
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('comunicado'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'comunicado' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-comunicado"
+                  >
+                    <Megaphone className="w-3.5 h-3.5 text-red-400" />
+                    Comunicado
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('campanha'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'campanha' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-campanha"
+                  >
+                    <Heart className="w-3.5 h-3.5 text-red-400" />
+                    Campanha
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('giro-esoterico'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'giro-esoterico' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-giro-esoterico"
+                  >
+                    <Globe className="w-3.5 h-3.5 text-red-400" />
+                    Giro Esotérico
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('podcast'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'podcast' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-podcast"
+                  >
+                    <Volume2 className="w-3.5 h-3.5 text-red-400 animate-pulse" />
+                    Podcast
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('esoterismo'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'esoterismo' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-esoterismo"
+                  >
+                    <Compass className="w-3.5 h-3.5 text-red-400 animate-spin-slow" />
+                    Esoterismo
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('contratar'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'contratar' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-contratar"
+                  >
+                    <CreditCard className="w-3.5 h-3.5 text-red-400" />
+                    Apoio & Serviços
+                  </button>
+                  <button 
+                    onClick={() => { setActiveCategory('downloads'); setSelectedArticle(null); }}
+                    className={`px-4 py-3.5 text-xs font-mono uppercase tracking-wider font-bold transition-all border-b-2 hover:bg-neutral-800 flex items-center gap-1.5 ${
+                      activeCategory === 'downloads' ? 'border-red-500 bg-neutral-800 text-red-400' : 'border-transparent text-neutral-300'
+                    }`}
+                    id="nav-category-downloads"
+                  >
+                    <Smartphone className="w-3.5 h-3.5 text-red-400" />
+                    Baixar App
+                  </button>
+                </nav>
+
+                {/* Global search input (only visible/functional for News Feed) */}
+                <div className="relative border-t md:border-t-0 md:border-l border-neutral-800 flex items-center bg-neutral-800/40">
+                  <span className="absolute left-3 text-neutral-400">
+                    <Search className="w-4 h-4" />
+                  </span>
+                  <input 
+                    type="text"
+                    placeholder="Buscar no portal..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      if (activeCategory !== 'reportagem') {
+                        setActiveCategory('reportagem');
+                      }
+                    }}
+                    className="w-full md:w-64 pl-9 pr-10 py-2.5 text-xs bg-transparent text-neutral-100 placeholder-neutral-400 focus:outline-none focus:bg-neutral-800 font-mono"
+                    id="input-pesquisar-noticias"
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 text-neutral-400 hover:text-white"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
 
         {/* MAIN PORTAL BODY (ESTANQUE / WATERTIGHT TAB ISOLATION) */}
         <main className="max-w-7xl mx-auto px-4 mt-6">
-          {activeCategory === 'reportagem' && (
-            <HomeTab 
-              articles={authorizedArticles}
-              filteredArticles={filteredArticles}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              setSelectedArticle={setSelectedArticle}
-              TEAM_MEMBERS={TEAM_MEMBERS}
-            />
-          )}
+          {authLoading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <RefreshCw className="w-10 h-10 text-red-600 animate-spin" />
+              <p className="text-xs font-mono text-neutral-500 mt-4">Sincronizando com as Estrelas...</p>
+            </div>
+          ) : (
+            <>
+              {activeCategory === 'reportagem' && (
+                <HomeTab 
+                  articles={authorizedArticles}
+                  filteredArticles={filteredArticles}
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  setSelectedArticle={setSelectedArticle}
+                  TEAM_MEMBERS={TEAM_MEMBERS}
+                />
+              )}
 
-          {activeCategory === 'comunicado' && (
-            <ComunicadoTab 
-              countdown={countdown}
-              isSinergiaActive={isSinergiaActive}
-              setIsSinergiaActive={setIsSinergiaActive}
-              customSynergyText={customSynergyText}
-              setCustomSynergyText={setCustomSynergyText}
-              synergyCampaign={synergyCampaign}
-              setSynergyCampaign={setSynergyCampaign}
-              triggerAlert={triggerAlert}
-              campaigns={campaigns}
-              setCampaigns={setCampaigns}
-              articles={articles}
-              setArticles={setArticles}
-            />
-          )}
+              {activeCategory === 'comunicado' && (
+                <ComunicadoTab 
+                  countdown={countdown}
+                  isSinergiaActive={isSinergiaActive}
+                  setIsSinergiaActive={setIsSinergiaActive}
+                  customSynergyText={customSynergyText}
+                  setCustomSynergyText={setCustomSynergyText}
+                  synergyCampaign={synergyCampaign}
+                  setSynergyCampaign={setSynergyCampaign}
+                  triggerAlert={triggerAlert}
+                  campaigns={campaigns}
+                  setCampaigns={setCampaigns}
+                  articles={articles}
+                  setArticles={setArticles}
+                />
+              )}
 
-          {activeCategory === 'campanha' && (
-            <CampanhaTab 
-              setExpandedCampaignImage={setExpandedCampaignImage}
-              handleCopyPix={handleCopyPix}
-              isSinergiaActive={isSinergiaActive}
-              customSynergyText={customSynergyText}
-              synergyCampaign={synergyCampaign}
-              onSwitchTab={(tab) => {
-                setActiveCategory(tab);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              campaigns={campaigns}
-              setCampaigns={setCampaigns}
-            />
-          )}
+              {activeCategory === 'campanha' && (
+                <CampanhaTab 
+                  setExpandedCampaignImage={setExpandedCampaignImage}
+                  handleCopyPix={handleCopyPix}
+                  isSinergiaActive={isSinergiaActive}
+                  customSynergyText={customSynergyText}
+                  synergyCampaign={synergyCampaign}
+                  onSwitchTab={(tab) => {
+                    setActiveCategory(tab);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  campaigns={campaigns}
+                  setCampaigns={setCampaigns}
+                />
+              )}
 
-          {activeCategory === 'giro-esoterico' && (
-            <GiroEsotericoTab 
-              esotericSearch={esotericSearch}
-              setEsotericSearch={setEsotericSearch}
-              esotericFilter={esotericFilter}
-              setEsotericFilter={setEsotericFilter}
-              filteredEsotericNews={filteredEsotericNews}
-              isUpdatingFeed={isUpdatingFeed}
-              handleRefreshEsotericFeed={handleRefreshEsotericFeed}
-            />
-          )}
+              {activeCategory === 'giro-esoterico' && (
+                <GiroEsotericoTab 
+                  esotericSearch={esotericSearch}
+                  setEsotericSearch={setEsotericSearch}
+                  esotericFilter={esotericFilter}
+                  setEsotericFilter={setEsotericFilter}
+                  filteredEsotericNews={filteredEsotericNews}
+                  isUpdatingFeed={isUpdatingFeed}
+                  handleRefreshEsotericFeed={handleRefreshEsotericFeed}
+                />
+              )}
 
-          {activeCategory === 'podcast' && (
-            <PodcastTab 
-              audioRef={audioRef}
-              audioUrl={audioUrl}
-              isPlaying={isPlaying}
-              setIsPlaying={setIsPlaying}
-              currentTime={currentTime}
-              setCurrentTime={setCurrentTime}
-              duration={duration}
-              setDuration={setDuration}
-              volume={volume}
-              setVolume={setVolume}
-              handleCopyPix={handleCopyPix}
-            />
+              {activeCategory === 'podcast' && (
+                <PodcastTab 
+                  audioRef={audioRef}
+                  audioUrl={audioUrl}
+                  isPlaying={isPlaying}
+                  setIsPlaying={setIsPlaying}
+                  currentTime={currentTime}
+                  setCurrentTime={setCurrentTime}
+                  duration={duration}
+                  setDuration={setDuration}
+                  volume={volume}
+                  setVolume={setVolume}
+                  handleCopyPix={handleCopyPix}
+                />
+              )}
+
+              {activeCategory === 'esoterismo' && (
+                <EsoterismoTab userZodiacSign={userZodiacSign} />
+              )}
+
+              {activeCategory === 'contratar' && (
+                <ContratarTab 
+                  user={currentUser}
+                  onAddCampaign={handleAddCampaign}
+                  onAddArticle={handleAddArticle}
+                  triggerAlert={triggerAlert}
+                  onOpenAuth={() => setIsAuthModalOpen(true)}
+                />
+              )}
+
+              {activeCategory === 'downloads' && (
+                <DownloadsTab />
+              )}
+
+              {activeCategory === 'alice' && (
+                <AliceTab 
+                  user={currentUser}
+                  onOpenAuth={() => setIsAuthModalOpen(true)}
+                  onSwitchTab={(tab) => {
+                    setActiveCategory(tab);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                />
+              )}
+            </>
           )}
         </main>
 
@@ -917,11 +1184,20 @@ export default function App() {
                     <ul className="space-y-4 font-sans text-xs">
                       <li className="flex flex-col gap-1 border-b border-neutral-100 dark:border-neutral-850 pb-3">
                         <div className="flex justify-between items-center">
-                          <span className="font-mono font-bold text-red-600 dark:text-red-400">v77.77 (O Ecossistema da Comunidade)</span>
+                          <span className="font-mono font-bold text-red-600 dark:text-red-400">v89.99 (Alice Gratuita, Recesso e Doações)</span>
+                          <span className="text-[10px] font-mono text-neutral-400">12 de Julho de 2026</span>
+                        </div>
+                        <p className="text-neutral-600 dark:text-neutral-400 mt-1 font-sans">
+                          **Atualização Massiva de Magnitude:** Suspensão definitiva de qualquer sistema de créditos para a Alice IA, removendo limites e tornando-a 100% gratuita e livre. Calendário do Podcast TNB NEWS reagendado para o dia 21 de julho devido ao período de recesso administrativo. Modelo de manutenção do site formalizado com foco em doações voluntárias e opcionais dos membros da comunidade.
+                        </p>
+                      </li>
+                      <li className="flex flex-col gap-1 border-b border-neutral-100 dark:border-neutral-850 pb-3">
+                        <div className="flex justify-between items-center">
+                          <span className="font-mono font-bold text-neutral-400">v77.77 (O Ecossistema da Comunidade)</span>
                           <span className="text-[10px] font-mono text-neutral-400">11 de Julho de 2026</span>
                         </div>
                         <p className="text-neutral-600 dark:text-neutral-400 mt-1 font-sans">
-                          **Atualização Massiva de Magnitude:** Consolidação total do ecossistema de participantes da comunidade. Padronização estrita de nomes completos exatos de cadastro (Alice Guedes, Simon Astrólogo e Luma Oliveira Ravaglia). Reformulação da Fale com a Redação em duplo botão de igual peso visual com preenchimentos automáticos dedicados. Implementação do sistema de **Autorização de Campanhas** (`status_campanha`) e **Embargo de Reportagens** (`data_publicacao_autorizada`) gerenciados em tempo real a partir de um novo Painel de Controle Administrativo integrado, com simulação dinâmica de contribuições via Pix.
+                          **Atualização de Magnitude:** Consolidação total do ecossistema de participantes da comunidade. Padronização estrita de nomes completos exatos de cadastro (Alice Guedes, Simon Astrólogo e Luma Oliveira Ravaglia). Reformulação da Fale com a Redação em duplo botão de igual peso visual com preenchimentos automáticos dedicados. Implementação do sistema de **Autorização de Campanhas** (`status_campanha`) e **Embargo de Reportagens** (`data_publicacao_autorizada`) gerenciados em tempo real a partir de um novo Painel de Controle Administrativo integrado, com simulação dinâmica de contribuições via Pix.
                         </p>
                       </li>
                       <li className="flex flex-col gap-1 border-b border-neutral-100 dark:border-neutral-850 pb-3">
@@ -1062,6 +1338,67 @@ export default function App() {
 
           </div>
         </footer>
+
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
+          onClose={() => setIsAuthModalOpen(false)} 
+          onAlert={(text, type) => setAlertMessage({ text, type: type === 'error' ? 'info' : 'success' })} 
+        />
+
+        {/* POP-UP DE BOAS-VINDAS DA COMUNIDADE */}
+        <AnimatePresence>
+          {showWelcomePopup && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/70 backdrop-blur-sm">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="bg-white dark:bg-neutral-900 border-2 border-red-600 dark:border-red-500 rounded-3xl max-w-md w-full p-6 shadow-2xl relative overflow-hidden"
+              >
+                {/* Branding flag */}
+                <div className="absolute top-0 right-0 bg-red-700 text-white font-mono text-[9px] uppercase tracking-widest px-3 py-1 font-bold rounded-bl-xl">
+                  CONVITE ESPECIAL
+                </div>
+
+                <div className="text-center mt-4">
+                  {/* Decorative Icon */}
+                  <div className="mx-auto w-16 h-16 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center text-red-600 dark:text-red-400 mb-4 animate-bounce">
+                    <Users className="w-8 h-8" />
+                  </div>
+
+                  <h3 className="font-serif text-2xl font-black text-neutral-900 dark:text-white uppercase tracking-tight">
+                    Entre na comunidade TNB
+                  </h3>
+                  
+                  <p className="text-neutral-600 dark:text-neutral-400 text-sm font-serif leading-relaxed mt-3">
+                    Faça parte da comunidade oficial do TNB News no WhatsApp e acompanhe novidades, anúncios e interaja com outros membros.
+                  </p>
+
+                  <div className="flex flex-col gap-2.5 mt-6">
+                    <a 
+                      href="https://chat.whatsapp.com/B7GdTqcrsFPJ2tNsgMUOnD"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setShowWelcomePopup(false)}
+                      className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-mono font-bold text-xs uppercase tracking-wider transition-colors flex justify-center items-center gap-2 shadow-md cursor-pointer text-center"
+                    >
+                      Entrar na comunidade
+                    </a>
+                    
+                    <button 
+                      onClick={() => setShowWelcomePopup(false)}
+                      className="w-full py-2.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-mono text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Agora não
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+
 
       </div>
     </div>

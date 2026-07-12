@@ -1,0 +1,61 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with credit counts and registration details.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "zodiacSign": { "type": "string" },
+        "bio": { "type": "string" },
+        "credits": { "type": "integer" }
+      },
+      "required": ["uid", "fullName", "username", "email", "credits"]
+    },
+    "Username": {
+      "title": "Username",
+      "description": "Unique username registry to prevent duplicates.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Recharge": {
+      "title": "Recharge",
+      "description": "Log of credit package purchases and recharges done by a user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "planName": { "type": "string" },
+        "creditsAdded": { "type": "integer" },
+        "price": { "type": "number" },
+        "paymentMethod": { "type": "string" },
+        "status": { "type": "string" },
+        "pixKey": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "planName", "creditsAdded", "price", "status", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user profiles."
+    },
+    "/usernames/{username}": {
+      "schema": "Username",
+      "description": "Collection of unique usernames."
+    },
+    "/users/{userId}/recharges/{rechargeId}": {
+      "schema": "Recharge",
+      "description": "Subcollection of credit purchases per user."
+    }
+  }
+}

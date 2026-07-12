@@ -13,7 +13,9 @@ import {
   UserCheck,
   Clock,
   PlusCircle,
-  HelpCircle
+  HelpCircle,
+  Mic,
+  Heart
 } from 'lucide-react';
 import { Campanha } from './CampanhaTab';
 import { Article } from '../types';
@@ -70,20 +72,6 @@ export default function ComunicadoTab({
     }));
   };
 
-  // Action: Simulate positive financial contribution (+R$ 50)
-  const simulateContribution = (id: string) => {
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === id) {
-        const newAmount = c.arrecadado + 50.00;
-        if (triggerAlert) {
-          triggerAlert(`Simulação de Pix recebido para ${c.fullName}: + R$ 50,00!`, 'success');
-        }
-        return { ...c, arrecadado: newAmount };
-      }
-      return c;
-    }));
-  };
-
   // Action: Toggle article publication embargo
   const toggleArticleEmbargo = (id: string) => {
     setArticles(prev => prev.map(art => {
@@ -107,6 +95,128 @@ export default function ComunicadoTab({
   return (
     <div className="max-w-4xl mx-auto space-y-10">
       
+      {/* PROMOÇÃO DE JULHO BANNER */}
+      <motion.div 
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="overflow-hidden rounded-3xl border-2 border-amber-500 bg-gradient-to-r from-red-950 via-[#260e0e] to-neutral-950 p-6 md:p-8 shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
+      >
+        <div className="flex items-center gap-4">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xl shrink-0 animate-pulse">
+            ✨
+          </span>
+          <div>
+            <span className="text-[10px] uppercase font-mono tracking-widest bg-amber-600 text-neutral-950 px-2 py-0.5 rounded font-black">
+              Promoção de Julho Ativa
+            </span>
+            <h3 className="font-serif text-lg md:text-xl font-black text-white tracking-tight mt-1.5 uppercase">
+              Ganhe 17% de desconto na sua publicação!
+            </h3>
+            <p className="text-xs text-neutral-300 font-sans mt-1">
+              Válido de 10 de julho até 16 de julho às 23h59 (Horário de Brasília).
+            </p>
+          </div>
+        </div>
+        <div className="bg-amber-500/10 border border-amber-500/30 px-5 py-3 rounded-2xl flex flex-col items-center justify-center text-center self-stretch md:self-auto shrink-0 font-mono">
+          <span className="text-[10px] uppercase text-amber-400/80 line-through">De R$ 20,00</span>
+          <span className="text-xl md:text-2xl font-black text-amber-400">R$ 16,60</span>
+        </div>
+      </motion.div>
+
+      {/* AVISO DE ATUALIZAÇÃO CARD */}
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="overflow-hidden rounded-3xl border-2 border-indigo-500 bg-gradient-to-br from-indigo-50/95 via-[#fefefe]/95 to-purple-50/95 p-6 md:p-8 shadow-xl dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-950 dark:border-indigo-650"
+      >
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4 mb-6">
+          <div className="flex items-center gap-3">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-indigo-650 dark:bg-indigo-950/80 dark:text-indigo-400 shrink-0">
+              <Sparkles className="w-6 h-6 animate-pulse" />
+            </span>
+            <div>
+              <span className="text-[10px] uppercase font-mono tracking-widest bg-indigo-600 text-white dark:bg-indigo-950 dark:text-indigo-300 px-2 py-0.5 rounded font-bold">
+                Atualização Geral
+              </span>
+              <h2 className="font-serif text-xl md:text-2xl font-black text-neutral-900 dark:text-neutral-50 tracking-tight mt-0.5">
+                TNB NEWS – AVISO DE ATUALIZAÇÃO
+              </h2>
+            </div>
+          </div>
+          <div className="bg-indigo-100 dark:bg-indigo-950/90 border border-indigo-200 dark:border-indigo-900 px-4 py-2 rounded-xl flex items-center gap-2 self-start md:self-auto shrink-0">
+            <span className="font-mono text-xs font-bold text-indigo-900 dark:text-indigo-300">
+              Versão Proporcional: v89.99
+            </span>
+          </div>
+        </div>
+
+        {/* Content segments */}
+        <div className="space-y-6 text-sm text-neutral-850 dark:text-neutral-300 font-sans leading-relaxed">
+          
+          {/* Podcast Section */}
+          <div className="bg-white/60 dark:bg-neutral-950/40 p-5 rounded-2xl border border-indigo-100 dark:border-indigo-900/60 space-y-3">
+            <h3 className="font-serif font-black text-base text-indigo-950 dark:text-indigo-350 uppercase tracking-wider flex items-center gap-2">
+              <Mic className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+              🎙️ Podcast TNB NEWS
+            </h3>
+            <p className="text-xs md:text-sm">
+              O podcast TNB NEWS, que acontece toda terça-feira, terá uma alteração no calendário.
+            </p>
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs flex items-start gap-2 text-amber-800 dark:text-amber-400">
+              <span className="text-sm">⚠️</span>
+              <div>
+                <strong>Atenção:</strong> O 2º episódio <strong>não será exibido no dia 14 (terça-feira)</strong>. Devido ao período de recesso, o episódio foi reagendado para o dia <strong>21 (terça-feira)</strong>.
+              </div>
+            </div>
+          </div>
+
+          {/* Alice AI Section */}
+          <div className="bg-white/60 dark:bg-neutral-950/40 p-5 rounded-2xl border border-indigo-100 dark:border-indigo-900/60 space-y-3">
+            <h3 className="font-serif font-black text-base text-indigo-950 dark:text-indigo-350 uppercase tracking-wider flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+              🤖 Alice IA
+            </h3>
+            <p className="text-xs md:text-sm">
+              A Alice passa a funcionar de forma totalmente livre e irrestrita:
+            </p>
+            <ul className="list-disc pl-5 space-y-1.5 text-xs md:text-sm text-neutral-700 dark:text-neutral-400">
+              <li>A Alice <strong>não utiliza mais</strong> sistema de créditos.</li>
+              <li>Não existe limite de 20 créditos.</li>
+              <li>A Alice está <strong>gratuita</strong> até a próxima atualização.</li>
+              <li className="font-semibold text-indigo-650 dark:text-indigo-400">O sistema de créditos fica suspenso até segunda ordem.</li>
+            </ul>
+          </div>
+
+          {/* Maintenance Section */}
+          <div className="bg-white/60 dark:bg-neutral-950/40 p-5 rounded-2xl border border-indigo-100 dark:border-indigo-900/60 space-y-3">
+            <h3 className="font-serif font-black text-base text-indigo-950 dark:text-indigo-350 uppercase tracking-wider flex items-center gap-2">
+              <Heart className="w-5 h-5 text-pink-600 dark:text-pink-400 shrink-0" />
+              💙 Manutenção do TNB NEWS
+            </h3>
+            <p className="text-xs md:text-sm">
+              O funcionamento do site será mantido através de:
+            </p>
+            <ul className="list-disc pl-5 space-y-1.5 text-xs md:text-sm text-neutral-700 dark:text-neutral-400">
+              <li><strong>Doações opcionais</strong> dos usuários.</li>
+              <li>Quem quiser apoiar o projeto poderá <strong>contribuir voluntariamente</strong>.</li>
+              <li>As doações ajudam na manutenção e evolução do TNB NEWS.</li>
+            </ul>
+          </div>
+
+          {/* Justification changelog */}
+          <div className="bg-neutral-900 text-neutral-300 rounded-2xl p-4 border border-neutral-800 space-y-2.5">
+            <h4 className="font-mono text-[10px] font-black uppercase tracking-wider text-neutral-400 flex items-center gap-1.5 border-b border-neutral-800 pb-1.5">
+              <span>📜</span> Registro de Mudanças Estruturais (v89.99)
+            </h4>
+            <p className="text-[11px] font-serif leading-relaxed text-neutral-400">
+              Esta atualização representa uma mudança estrutural massiva: a abolição do limite de mensagens por IA, a implementação do novo canal promocional e a flexibilização do modelo de faturamento em prol de apoio comunitário e voluntário. Justifica-se, por tanto, o salto de versão do sistema.
+            </p>
+          </div>
+
+        </div>
+      </motion.div>
+
       {/* COMUNICADO DE RECESSO CARD */}
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
@@ -443,7 +553,7 @@ export default function ComunicadoTab({
             </div>
           </div>
           <span className="text-[10px] font-mono bg-neutral-850 border border-neutral-850 text-neutral-400 px-3 py-1 rounded-lg">
-            Acesso Autorizado • v77.77
+            Acesso Autorizado • v89.99
           </span>
         </div>
 
@@ -496,12 +606,6 @@ export default function ComunicadoTab({
                         }`}
                       >
                         {isAuthorized ? '🚫 Bloquear (Pendente)' : '✅ Autorizar (Pública)'}
-                      </button>
-                      <button
-                        onClick={() => simulateContribution(c.id)}
-                        className="w-full font-mono text-[9px] py-2 px-3 rounded-lg font-bold uppercase tracking-wider bg-neutral-800 hover:bg-neutral-750 text-neutral-300 border border-neutral-750 inline-flex items-center justify-center gap-1"
-                      >
-                        <PlusCircle className="w-3.5 h-3.5 text-emerald-400" /> Simular Pix (+ R$ 50,00)
                       </button>
                     </div>
                   </div>

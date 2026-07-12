@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // User Profiles: Users can only read and write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // User Recharges
+    match /users/{userId}/recharges/{rechargeId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Unique Usernames: Anyone logged in can check existence, but can only create if it doesn't exist
+    match /usernames/{username} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && !exists(/databases/$(database)/documents/usernames/$(username));
+      allow update: if false; // Usernames are permanent/unchangeable once created
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+  }
+}
