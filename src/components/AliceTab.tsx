@@ -489,7 +489,7 @@ export default function AliceTab({ user, onOpenAuth, onSwitchTab }: AliceTabProp
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
                   disabled={loading}
-                  className="flex-1 px-4 py-3 border border-neutral-200 dark:border-neutral-850 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-950 placeholder-neutral-400 focus:outline-none focus:border-indigo-500 focus:bg-white text-neutral-800 dark:text-neutral-100 disabled:opacity-60 font-mono"
+                  className="flex-1 px-4 py-3 border border-neutral-200 dark:border-neutral-850 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-950 placeholder-neutral-400 focus:outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-neutral-900 text-neutral-800 dark:text-neutral-100 disabled:opacity-60 font-mono"
                   id="input-alice-chat"
                 />
                 <button
